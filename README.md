@@ -43,9 +43,7 @@ BookNest is a Django REST Framework application that serves as an alternative to
    - Django API: http://localhost:8000
    - API Documentation: http://localhost:8000/api/schema/swagger-ui/
    - pgAdmin (if enabled): http://localhost:5050
-   - Admin Panel: http://localhost:8000/admin/
-     - Email: admin@booknest.com
-     - Password: admin123
+
 
 ### Available Services
 
