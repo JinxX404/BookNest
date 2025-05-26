@@ -41,7 +41,7 @@ BookNest is a Django REST Framework application that serves as an alternative to
 
 4. **Access the application**
    - Django API: http://localhost:8000
-   - API Documentation: http://localhost:8000/api/schema/swagger-ui/
+   - API Documentation: http://localhost:8000/swagger/
    - pgAdmin (if enabled): http://localhost:5050
 
 
