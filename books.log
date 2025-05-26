@@ -1,0 +1,209 @@
+2025-05-24 00:31:02,898 - INFO - Local search for 'J. K. Rowling' found 0 results
+2025-05-24 00:31:20,548 - INFO - External search for 'J. K. Rowling' found 20 results
+2025-05-24 00:31:20,549 - INFO - Normalized Book: 'Harry Potter and the Order of the Phoenix' by J. K. Rowling from openlibrary with genres: Children'S Books/Ages 9-12 Fiction, Witches And Warlocks, Juvenile Audience, Juvenile Works, Magic
+2025-05-24 00:31:20,549 - INFO - Normalized Book: 'Harry Potter and the Prisoner of Azkaban' by J. K. Rowling from openlibrary with genres: Fantasy Fiction, Orphans, Foster Homes, Fantasy, Literature
+2025-05-24 00:31:20,550 - INFO - Normalized Book: 'Harry Potter and the Chamber of Secrets' by J. K. Rowling from openlibrary with genres: Fantasy Fiction, School Stories, Fiction, Fantasy, Nestlé Smarties Book Prize Winner
+2025-05-24 00:31:20,550 - INFO - Normalized Book: 'Harry Potter and the Deathly Hallows' by J. K. Rowling from openlibrary with genres: The Elder Wand, Children'S Books, Dementors, Good And Evil, Juvenile Literature
+2025-05-24 00:31:20,550 - INFO - Normalized Book: 'Harry Potter and the Philosopher's Stone' by J. K. Rowling from openlibrary with genres: Ghosts, Monsters, Vampires, Witches, Challenges And Overcoming Obstacles
+2025-05-24 00:31:20,551 - INFO - Normalized Book: 'J.K. Rowling' by Colleen A. Sexton from openlibrary with genres: Juvenile Literature, Harry Potter (Fictitious Character), Authorship, Biography, English Authors
+2025-05-24 00:31:20,551 - INFO - Normalized Book: 'J.K. Rowling' by William Compson from openlibrary with genres: Authorship, Biography, Children'S Stories, English Authors, Harry Potter (Fictitious Character)
+2025-05-24 00:31:20,551 - INFO - Normalized Book: 'J.K. Rowling' by Bryan Pezzi from openlibrary with genres: English Authors, Biography, Creative Writing, Juvenile Literature, Harry Potter (Fictitious Character)
+2025-05-24 00:31:20,552 - INFO - Normalized Book: 'J.K. Rowling' by Chris Bowman from openlibrary with genres: English Authors, Biography, Children'S Stories, Authorship
+2025-05-24 00:31:20,552 - INFO - Normalized Book: 'J. K. Rowling' by Sean Smith from openlibrary with genres: English Novelists, Fantasy Fiction, Biography, Children'S Stories, Authorship
+2025-05-24 00:31:20,553 - INFO - Normalized Book: 'J. K. Rowling' by Colleen A. Sexton from googlebooks with genres: Juvenile Nonfiction
+2025-05-24 00:31:20,553 - INFO - Normalized Book: 'J. K. Rowling' by Charles J. Shields from googlebooks with genres: Juvenile Nonfiction
+2025-05-24 00:31:20,554 - INFO - Normalized Book: 'JK Rowling's Harry Potter Novels' by Philip Nel from googlebooks with genres: Literary Criticism
+2025-05-24 00:31:20,555 - INFO - Normalized Book: 'J. K. Rowling' by Jennifer Hunsicker from googlebooks with genres: Juvenile Nonfiction
+2025-05-24 00:31:20,555 - INFO - Normalized Book: 'J. K. Rowling' by Joanne Mattern from googlebooks with genres: Authors, English
+2025-05-24 00:31:20,556 - INFO - Normalized Book: 'J.K. Rowling: A Bibliography' by Philip W. Errington from googlebooks with genres: Fiction
+2025-05-24 00:31:20,653 - INFO - Normalized Book: 'How to Analyze the Works of J. K. Rowling' by Victoria Peterson-Hilleque from googlebooks with genres: Juvenile Nonfiction
+2025-05-24 00:31:20,653 - INFO - Normalized Book: 'J.K. Rowling: A Bibliography 1997-2013' by Philip W. Errington from googlebooks with genres: Fiction
+2025-05-24 00:31:20,654 - INFO - Normalized Book: 'Game Changers: A Biography of J. K. Rowling' by Dona Herweck Rice from googlebooks with genres: Young Adult Nonfiction
+2025-05-24 00:31:20,654 - INFO - Search completed for query: 'J. K. Rowling', returned 10 results
+2025-05-24 00:32:53,606 - INFO - Normalized Book: 'Marvel Encyclopedia' by DK, Stan Lee, Adam Bray, Stephen Wiacek from database with genres: Comics & Graphic Novels
+2025-05-24 00:32:53,606 - INFO - Normalized Book: 'Marvel Encyclopedia' by DK, Stan Lee, Adam Bray, Stephen Wiacek from database with genres: Comics & Graphic Novels
+2025-05-24 00:32:53,607 - INFO - Normalized Book: 'Marvel Encyclopedia' by DK, Stan Lee, Adam Bray, Stephen Wiacek from database with genres: Comics & Graphic Novels
+2025-05-24 00:32:53,607 - INFO - Normalized Book: 'Marvel Encyclopedia' by DK, Stan Lee, Adam Bray, Stephen Wiacek from database with genres: Comics & Graphic Novels
+2025-05-24 00:32:53,607 - INFO - Local search for 'Stan Lee' found 4 results
+2025-05-24 00:33:22,147 - INFO - External search for 'Stan Lee' found 19 results
+2025-05-24 00:33:22,148 - INFO - Normalized Book: 'Stan Lee' by María Isabel Sánchez Vegara, Ana Albero from openlibrary with genres: General
+2025-05-24 00:33:22,148 - INFO - Normalized Book: 'Stan Lee' by Bob Batchelor from openlibrary with genres: Cartoonists, History And Criticism, Marvel Comics Group, Comic Books, Strips, Biography
+2025-05-24 00:33:22,148 - INFO - Normalized Book: 'Stan Lee's Riftworld' by Stan Lee from openlibrary with genres: Fiction, Science Fiction, General
+2025-05-24 00:33:22,149 - INFO - Normalized Book: 'Stan Lee's Riftworld' by Stan Lee, William McCay from openlibrary with genres: General
+2025-05-24 00:33:22,149 - INFO - Normalized Book: 'Stan Lee's Riftworld' by Bill McCay from openlibrary with genres: General
+2025-05-24 00:33:22,149 - INFO - Normalized Book: 'Stan Lee' by Miller, Raymond H. from openlibrary with genres: Biography, Cartoonists, Juvenile Literature, Artists, American, Artists, Juvenile Literature
+2025-05-24 00:33:22,150 - INFO - Normalized Book: 'Stan Lee' by Liel Leibovitz from openlibrary with genres: Literature, Cartoonists, Biography
+2025-05-24 00:33:22,150 - INFO - Normalized Book: 'Stan Lee' by Bob Batchelor from openlibrary with genres: General
+2025-05-24 00:33:22,152 - INFO - Normalized Book: 'Stan Lee' by Stan Lee, Larry Lieber, Barry Windsor-Smith, Tom Defalco from openlibrary with genres: Comics & Graphic Novels, Science Fiction
+2025-05-24 00:33:22,152 - INFO - Normalized Book: 'Who Was Stan Lee?' by Geoff Edgers from openlibrary with genres: Cartooning, Cartooning, Juvenile Literature, Juvenile Literature, Cartoonists, Biography
+2025-05-24 00:33:22,153 - INFO - Normalized Book: 'Stan Lee' by Bob Batchelor from googlebooks with genres: Young Adult Nonfiction
+2025-05-24 00:33:22,154 - INFO - Normalized Book: 'Stan Lee' by Adrian Mackinder from googlebooks with genres: Biography & Autobiography
+2025-05-24 00:33:22,155 - INFO - Normalized Book: 'Stan Lee's How to Write Comics' by Stan Lee from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:33:22,155 - INFO - Normalized Book: 'Stan Lee's Mighty 7 #01' by Tony Blake, Paul Jackson, Stan Lee, Alex Saviuk, Bob Smith, John Workman, Tom Smith, Matt Herms from googlebooks with genres: Juvenile Fiction
+2025-05-24 00:33:22,156 - INFO - Normalized Book: 'True Believer: The Rise and Fall of Stan Lee' by Abraham Riesman from googlebooks with genres: Biography & Autobiography
+2025-05-24 00:33:22,156 - INFO - Normalized Book: 'Stan Lee's Mighty 7 #03' by Tony Blake, Paul Jackson, Stan Lee, Alex Saviuk, Bob Smith, John Workman, Tom Smith, Matt Herms from googlebooks with genres: Juvenile Fiction
+2025-05-24 00:33:22,157 - INFO - Normalized Book: 'Tribute: Stan Lee' by Michael Frizell from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:33:22,158 - INFO - Normalized Book: 'Stan Lee's Mighty 7 #02' by Tony Blake, Paul Jackson, Stan Lee, Alex Saviuk, Bob Smith, John Workman, Tom Smith, Matt Herms from googlebooks with genres: Juvenile Fiction
+2025-05-24 00:33:22,158 - INFO - Normalized Book: 'Who Was Stan Lee?' by Geoff Edgers, Who HQ from googlebooks with genres: Juvenile Nonfiction
+2025-05-24 00:33:22,159 - INFO - Search completed for query: 'Stan Lee', returned 10 results
+2025-05-24 00:35:26,015 - INFO - Local search for 'ant man' found 0 results
+2025-05-24 00:35:45,371 - INFO - External search for 'ant man' found 19 results
+2025-05-24 00:35:45,371 - INFO - Normalized Book: 'Meditations' by Marcus Aurelius from openlibrary with genres: Early Works To 1800, Philosophy, Stoics, Classic Literature, Fiction
+2025-05-24 00:35:45,373 - INFO - Normalized Book: 'Study Guide' by Supersummary from openlibrary with genres: Sociology
+2025-05-24 00:35:45,373 - INFO - Normalized Book: 'Naturalis historia' by Pliny the Elder from openlibrary with genres: Ancient Geography, Art, Art, Greco-Roman, Astronomy, Cosmography
+2025-05-24 00:35:45,373 - INFO - Normalized Book: 'Northanger Abbey' by Jane Austen from openlibrary with genres: Mate Selection, Cousins, Fiction, Young Women, Horror Tales
+2025-05-24 00:35:45,374 - INFO - Normalized Book: 'Don Quixote' by Miguel de Cervantes Saavedra from openlibrary with genres: Don Quixote (Cervantes Saavedra, Miguel De), Quotations, Knights And Knighthood, Social Life And Customs, Fiction
+2025-05-24 00:35:45,374 - INFO - Normalized Book: 'The Da Vinci Code' by Dan Brown from openlibrary with genres: Suspense & Thriller, Spiritual Fiction, Hieros Gamos, Priory Of Sion, Holy Grail
+2025-05-24 00:35:45,374 - INFO - Normalized Book: 'Du contrat social' by Jean-Jacques Rousseau from openlibrary with genres: Peace, The State, Science Politique, Economics, Early Works To 1800
+2025-05-24 00:35:45,375 - INFO - Normalized Book: 'The Great Gatsby' by F. Scott Fitzgerald from openlibrary with genres: Married People, Fiction, American Fiction (Fictional Works By One Author), Fiction, Psychological, Long Island (N.Y.), Fiction, Fiction
+2025-05-24 00:35:45,385 - INFO - Normalized Book: 'Marvel's Ant-Man' by Tomas Palacios from openlibrary with genres: Children'S Fiction, Ants, Fiction, Fantasy Fiction, Animals, Superheroes
+2025-05-24 00:35:45,385 - INFO - Normalized Book: 'Ant-Man' by Al Ewing from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:35:45,386 - INFO - Normalized Book: 'Marvel's Ant-Man - The Art Of The Movie' by Various from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:35:45,387 - INFO - Normalized Book: 'Ant-Man/Giant-Man Epic Collection' by Stan Lee, Various from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:35:45,388 - INFO - Normalized Book: 'Marvel novels - Ant-Man' by Jason Starr from googlebooks with genres: Fiction
+2025-05-24 00:35:45,389 - INFO - Normalized Book: 'The Ant Men' by Eric North from googlebooks with genres: Fiction
+2025-05-24 00:35:45,390 - INFO - Normalized Book: 'Ant-Man & Wasp' by Tim Seeley from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:35:45,391 - INFO - Normalized Book: 'Ant-Man Vol. 1' by Nick Spencer from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:35:45,391 - INFO - Normalized Book: 'Phase Two: Marvel's Ant-Man' by Alex Irvine from googlebooks with genres: Juvenile Fiction
+2025-05-24 00:35:45,391 - INFO - Normalized Book: 'e-Pedia: Captain America: Civil War' by Contributors, Wikipedia from googlebooks with genres: Fiction
+2025-05-24 00:35:45,393 - INFO - Search completed for query: 'ant man', returned 10 results
+2025-05-24 00:39:07,947 - INFO - Local search for 'black panter' found 0 results
+2025-05-24 00:39:25,275 - INFO - External search for 'black panter' found 13 results
+2025-05-24 00:39:25,276 - INFO - Normalized Book: 'Marvel Cinematic Collection Black Panter. Preludio' by WILL CORONA PILGRIM from openlibrary with genres: General
+2025-05-24 00:39:25,276 - INFO - Normalized Book: 'Black Panter - Marvel Süper Kahramanlar Boyama Koleksiyonu' by Collective from openlibrary with genres: General
+2025-05-24 00:39:25,276 - INFO - Normalized Book: 'Pantere nere. Storia e mito del Black Panther Party' by Unknown Author from openlibrary with genres: General
+2025-05-24 00:39:25,277 - INFO - Normalized Book: 'Black Panther' by Terence McSweeney from googlebooks with genres: Performing Arts
+2025-05-24 00:39:25,277 - INFO - Normalized Book: 'Black Panther' by Ta-Nehisi Coates from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:39:25,277 - INFO - Normalized Book: 'The Black Panther' by David Hilliard from googlebooks with genres: History
+2025-05-24 00:39:25,277 - INFO - Normalized Book: 'The Ages of the Black Panther' by Joseph J. Darowski from googlebooks with genres: Literary Criticism
+2025-05-24 00:39:25,277 - INFO - Normalized Book: 'Afrofuturism in Black Panther' by Karen A. Ritzenhoff, Renée T. White from googlebooks with genres: Performing Arts
+2025-05-24 00:39:25,278 - INFO - Normalized Book: 'The Black Panther Party (reconsidered)' by Charles Earl Jones from googlebooks with genres: History
+2025-05-24 00:39:25,278 - INFO - Normalized Book: 'Black Panther' by Scott Bukatman from googlebooks with genres: Performing Arts
+2025-05-24 00:39:25,279 - INFO - Normalized Book: 'In Search of the Black Panther Party' by Jama Lazerow, Yohuru Williams from googlebooks with genres: Political Science
+2025-05-24 00:39:25,279 - INFO - Normalized Book: 'Liberation, Imagination and the Black Panther Party' by Kathleen Cleaver, George Katsiaficas from googlebooks with genres: Political Science
+2025-05-24 00:39:25,279 - INFO - Normalized Book: 'Black Panther By Reginald Hudlin' by Reginald Hudlin, Jason Aaron from googlebooks with genres: Comics & Graphic Novels
+2025-05-24 00:39:25,279 - INFO - Search completed for query: 'black panter', returned 10 results
+2025-05-24 00:42:46,314 - INFO - Local search for '" "' found 0 results
+2025-05-24 00:42:54,656 - INFO - External search for '" "' found 6 results
+2025-05-24 00:42:54,694 - INFO - Normalized Book: 'Where's Spot?' by Eric Hill from googlebooks with genres: Animals
+2025-05-24 00:42:54,720 - INFO - Search completed for query: '" "', returned 6 results
+2025-05-24 00:46:03,225 - INFO - Normalized Book: 'Programming Google App Engine' by Dan Sanderson from database with genres: Computers
+2025-05-24 00:46:03,225 - INFO - Local search for '"java"' found 1 results
+2025-05-24 00:46:34,677 - INFO - External search for '"java"' found 18 results
+2025-05-24 00:46:34,678 - INFO - Normalized Book: 'Head first Java' by Kathy Sierra from openlibrary with genres: Java (Computer Program Language), Programming, Java, General, Games
+2025-05-24 00:46:34,680 - INFO - Normalized Book: 'Programming with Java' by E. Balagurusamy from openlibrary with genres: Computers Internet Programming Java General
+2025-05-24 00:46:34,680 - INFO - Normalized Book: 'Core Java : an Integrated Approach, New' by DT Editorial Services R. Nageswara Rao from openlibrary with genres: General
+2025-05-24 00:46:34,681 - INFO - Normalized Book: 'Java' by Herbert Schildt from openlibrary with genres: Java (Computer Program Language), Internet Programming, Java (Computer Program Language)
+2025-05-24 00:46:34,681 - INFO - Normalized Book: 'Introduction to Algorithms' by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein from openlibrary with genres: Algorithms, Computer Algorithms, Computer Programming, Open_Syllabus_Project, Programming
+2025-05-24 00:46:34,681 - INFO - Normalized Book: 'Max Havelaar of de koffijveilingen der Nederlansche handelmaatschappij' by Multatuli from openlibrary with genres: Colonies, Culture Conflict, Dutch, Fiction, Coffee Industry
+2025-05-24 00:46:34,683 - INFO - Normalized Book: 'Effective Java' by Joshua Bloch from openlibrary with genres: Java (Computer Program Language), Object-Oriented Programming (Computer Science), Java 2., Java Yu Yan, Cheng Xu She Ji
+2025-05-24 00:46:34,683 - INFO - Normalized Book: 'Java for dummies' by Barry Burd from openlibrary with genres: Java (Computer Program Language), Internet Programming, Programming Languages (Electronic Computers), Java (Computer Program Language)
+2025-05-24 00:46:34,684 - INFO - Normalized Book: 'JavaScript' by David Flanagan from openlibrary with genres: Javascript (Computer Program Language), Web Servers, Object-Oriented Programming (Computer Science), Javascript (Computer Language), Mathematics
+2025-05-24 00:46:34,684 - INFO - Normalized Book: 'The Political Economy of Java's Northeast Coast, c. 1740-1800' by Hui Kian Kwee from googlebooks with genres: Psychology
+2025-05-24 00:46:34,685 - INFO - Normalized Book: 'Oracle PL/SQL Programming' by Steven Feuerstein, Bill Pribyl from googlebooks with genres: Computers
+2025-05-24 00:46:34,685 - INFO - Normalized Book: 'JavaScript' by David Flanagan from googlebooks with genres: Computers
+2025-05-24 00:46:34,686 - INFO - Normalized Book: 'Beowulf Cluster Computing with Linux' by Thomas Lawrence Sterling from googlebooks with genres: Computers
+2025-05-24 00:46:34,686 - INFO - Normalized Book: 'JDBC API Tutorial and Reference' by Maydene Fisher, Jonathan Ellis, Jon Ellis, Jonathan Bruce from googlebooks with genres: Computers
+2025-05-24 00:46:34,686 - INFO - Normalized Book: 'Professional Portal Development with Open Source Tools' by W. Clay Richardson, Donald Avondolio, Joe Vitale, Peter Len, Kevin T. Smith from googlebooks with genres: Computers
+2025-05-24 00:46:34,687 - INFO - Normalized Book: 'All About Maude - A High-Performance Logical Framework' by Manuel Clavel, Francisco Durán, Steven Eker, Patrick Lincoln, Narciso Martí-Oliet, José Meseguer, Carolyn Talcott from googlebooks with genres: Computers
+2025-05-24 00:46:34,687 - INFO - Normalized Book: 'J2EE and Beyond' by Art Taylor from googlebooks with genres: Computers
+2025-05-24 00:46:34,687 - INFO - Normalized Book: 'The Industrial Information Technology Handbook' by Richard Zurawski from googlebooks with genres: Computers
+2025-05-24 00:46:34,688 - INFO - Search completed for query: '"java"', returned 10 results
+2025-05-24 00:52:54,919 - INFO - Normalized Book: 'Programming Google App Engine' by Dan Sanderson from database with genres: Computers
+2025-05-24 00:52:54,920 - INFO - Local search for 'java' found 1 results
+2025-05-24 00:53:23,503 - INFO - External search for 'java' found 18 results
+2025-05-24 00:53:23,504 - INFO - Normalized Book: 'Head first Java' by Kathy Sierra from openlibrary with genres: Java (Computer Program Language), Programming, Java, General, Games
+2025-05-24 00:53:23,505 - INFO - Normalized Book: 'Programming with Java' by E. Balagurusamy from openlibrary with genres: Computers Internet Programming Java General
+2025-05-24 00:53:23,506 - INFO - Normalized Book: 'Core Java : an Integrated Approach, New' by DT Editorial Services R. Nageswara Rao from openlibrary with genres: General
+2025-05-24 00:53:23,506 - INFO - Normalized Book: 'Java' by Herbert Schildt from openlibrary with genres: Java (Computer Program Language), Internet Programming, Java (Computer Program Language)
+2025-05-24 00:53:23,506 - INFO - Normalized Book: 'Introduction to Algorithms' by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein from openlibrary with genres: Algorithms, Computer Algorithms, Computer Programming, Open_Syllabus_Project, Programming
+2025-05-24 00:53:23,507 - INFO - Normalized Book: 'Max Havelaar of de koffijveilingen der Nederlansche handelmaatschappij' by Multatuli from openlibrary with genres: Colonies, Culture Conflict, Dutch, Fiction, Coffee Industry
+2025-05-24 00:53:23,507 - INFO - Normalized Book: 'Effective Java' by Joshua Bloch from openlibrary with genres: Java (Computer Program Language), Object-Oriented Programming (Computer Science), Java 2., Java Yu Yan, Cheng Xu She Ji
+2025-05-24 00:53:23,508 - INFO - Normalized Book: 'Java for dummies' by Barry Burd from openlibrary with genres: Java (Computer Program Language), Internet Programming, Programming Languages (Electronic Computers), Java (Computer Program Language)
+2025-05-24 00:53:23,508 - INFO - Normalized Book: 'JavaScript' by David Flanagan from openlibrary with genres: Javascript (Computer Program Language), Web Servers, Object-Oriented Programming (Computer Science), Javascript (Computer Language), Mathematics
+2025-05-24 00:53:23,508 - INFO - Normalized Book: 'The Political Economy of Java's Northeast Coast, c. 1740-1800' by Hui Kian Kwee from googlebooks with genres: Psychology
+2025-05-24 00:53:23,509 - INFO - Normalized Book: 'Dictionary of Information Technology' by Ramesh Bangia from googlebooks with genres: Electronic Data Processing
+2025-05-24 00:53:23,510 - INFO - Normalized Book: 'Oracle PL/SQL Programming' by Steven Feuerstein, Bill Pribyl from googlebooks with genres: Computers
+2025-05-24 00:53:23,510 - INFO - Normalized Book: 'JavaScript' by David Flanagan from googlebooks with genres: Computers
+2025-05-24 00:53:23,511 - INFO - Normalized Book: 'Beowulf Cluster Computing with Linux' by Thomas Lawrence Sterling from googlebooks with genres: Computers
+2025-05-24 00:53:23,511 - INFO - Normalized Book: 'JDBC API Tutorial and Reference' by Maydene Fisher, Jonathan Ellis, Jon Ellis, Jonathan Bruce from googlebooks with genres: Computers
+2025-05-24 00:53:23,512 - INFO - Normalized Book: 'Professional Portal Development with Open Source Tools' by W. Clay Richardson, Donald Avondolio, Joe Vitale, Peter Len, Kevin T. Smith from googlebooks with genres: Computers
+2025-05-24 00:53:23,512 - INFO - Normalized Book: 'J2EE and Beyond' by Art Taylor from googlebooks with genres: Computers
+2025-05-24 00:53:23,513 - INFO - Normalized Book: 'The Industrial Information Technology Handbook' by Richard Zurawski from googlebooks with genres: Computers
+2025-05-24 00:53:23,513 - INFO - Search completed for query: 'java', returned 19 results
+2025-05-24 01:41:36,667 - INFO - Local search for 'java' found 0 results
+2025-05-24 01:43:06,876 - INFO - Normalized Book: 'Programming Google App Engine' by Dan Sanderson from database with genres: Computers
+2025-05-24 01:43:06,877 - INFO - Local search for 'java' found 1 results
+2025-05-24 01:43:30,979 - INFO - External search for 'java' found 18 results
+2025-05-24 01:43:30,979 - INFO - Normalized Book: 'Head first Java' by Kathy Sierra from openlibrary with genres: Games, Java, Programming, General, Java (Computer Program Language)
+2025-05-24 01:43:30,980 - INFO - Normalized Book: 'Programming with Java' by E. Balagurusamy from openlibrary with genres: Computers Internet Programming Java General
+2025-05-24 01:43:30,980 - INFO - Normalized Book: 'Core Java : an Integrated Approach, New' by Dt Editorial Services R. Nageswara Rao from openlibrary with genres: General
+2025-05-24 01:43:30,981 - INFO - Normalized Book: 'Java' by Herbert Schildt from openlibrary with genres: Internet Programming, Java (Computer Program Language)
+2025-05-24 01:43:30,981 - INFO - Normalized Book: 'Introduction to Algorithms' by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein from openlibrary with genres: Algorithms, Open_Syllabus_Project, Computer Algorithms, Computer Programming, Programming
+2025-05-24 01:43:30,982 - INFO - Normalized Book: 'Max Havelaar of de koffijveilingen der Nederlansche handelmaatschappij' by Multatuli from openlibrary with genres: Dutch, Colonies, Fiction, Culture Conflict, Coffee Industry
+2025-05-24 01:43:30,982 - INFO - Normalized Book: 'Effective Java' by Joshua Bloch from openlibrary with genres: Java Yu Yan, Java 2., Cheng Xu She Ji, Object-Oriented Programming (Computer Science), Java (Computer Program Language)
+2025-05-24 01:43:30,982 - INFO - Normalized Book: 'Java for dummies' by Barry Burd from openlibrary with genres: Programming Languages (Electronic Computers), Internet Programming, Java (Computer Program Language)
+2025-05-24 01:43:30,983 - INFO - Normalized Book: 'JavaScript' by David Flanagan from openlibrary with genres: Mathematics, Javascript (Computer Program Language), Javascript (Computer Language), Web Servers, Object-Oriented Programming (Computer Science)
+2025-05-24 01:43:30,984 - INFO - Normalized Book: 'The Political Economy of Java's Northeast Coast, c. 1740-1800' by Hui Kian Kwee from googlebooks with genres: Psychology
+2025-05-24 01:43:30,985 - INFO - Normalized Book: 'Dictionary of Information Technology' by Ramesh Bangia from googlebooks with genres: Electronic Data Processing
+2025-05-24 01:43:30,986 - INFO - Normalized Book: 'Oracle PL/SQL Programming' by Steven Feuerstein, Bill Pribyl from googlebooks with genres: Computers
+2025-05-24 01:43:30,986 - INFO - Normalized Book: 'JavaScript' by David Flanagan from googlebooks with genres: Computers
+2025-05-24 01:43:30,987 - INFO - Normalized Book: 'Beowulf Cluster Computing with Linux' by Thomas Lawrence Sterling from googlebooks with genres: Computers
+2025-05-24 01:43:30,987 - INFO - Normalized Book: 'JDBC API Tutorial and Reference' by Maydene Fisher, Jonathan Ellis, Jon Ellis, Jonathan Bruce from googlebooks with genres: Computers
+2025-05-24 01:43:30,988 - INFO - Normalized Book: 'Professional Portal Development with Open Source Tools' by W. Clay Richardson, Donald Avondolio, Joe Vitale, Peter Len, Kevin T. Smith from googlebooks with genres: Computers
+2025-05-24 01:43:30,988 - INFO - Normalized Book: 'J2EE and Beyond' by Art Taylor from googlebooks with genres: Computers
+2025-05-24 01:43:30,989 - INFO - Normalized Book: 'The Industrial Information Technology Handbook' by Richard Zurawski from googlebooks with genres: Computers
+2025-05-24 01:43:30,989 - INFO - Search completed for query: 'java', returned 19 results
+2025-05-24 01:44:17,094 - INFO - Normalized Book: 'Harry Potter and the Other' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,094 - INFO - Normalized Book: 'Critical Perspectives on Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,094 - INFO - Normalized Book: 'Teaching with Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,094 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,095 - INFO - Normalized Book: 'The Harry Potter Generation' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,095 - INFO - Normalized Book: 'Harry Potter and the Philosopher's Stone' by J.k. Rowling from database with genres: Fantasy
+2025-05-24 01:44:17,095 - INFO - Normalized Book: 'Re-Reading Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,095 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,096 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,096 - INFO - Normalized Book: 'Harry Potter (series) 1-7' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,096 - INFO - Normalized Book: 'Harry Potter and the Chamber of Secrets' by Unknown Author from database with genres: Fantasy Fiction, School Stories, Nestlé Smarties Book Prize Winner, Fantasy, Fiction
+2025-05-24 01:44:17,097 - INFO - Normalized Book: 'Harry Potter and the Chamber of Secrets' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,097 - INFO - Normalized Book: 'Harry Potter and the Deathly Hallows' by Unknown Author from database with genres: Juvenile Literature, The Elder Wand, Good And Evil, Children'S Books, Dementors
+2025-05-24 01:44:17,097 - INFO - Normalized Book: 'Harry Potter and the Deathly Hallows' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,098 - INFO - Normalized Book: 'Harry Potter and the Goblet of Fire' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,098 - INFO - Normalized Book: 'Harry Potter and the Half-Blood Prince' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,098 - INFO - Normalized Book: 'Harry Potter and the Order of the Phoenix' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,099 - INFO - Normalized Book: 'Harry Potter and the Philosopher's Stone' by Unknown Author from database with genres: Ghosts, Monsters, Challenges And Overcoming Obstacles, Witches, Vampires
+2025-05-24 01:44:17,100 - INFO - Normalized Book: 'Harry Potter and the Philosopher's Stone' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,100 - INFO - Normalized Book: 'Harry Potter and the Prisoner of Azkaban' by Unknown Author from database with genres: General
+2025-05-24 01:44:17,101 - INFO - Normalized Book: 'JK Rowling's Harry Potter Novels' by Philip Nel from database with genres: Literary Criticism
+2025-05-24 01:44:17,101 - INFO - Normalized Book: 'How to Analyze the Works of J. K. Rowling' by Victoria Peterson-hilleque from database with genres: Juvenile Nonfiction
+2025-05-24 01:44:17,101 - INFO - Normalized Book: 'J.K. Rowling: A Bibliography' by Philip W. Errington from database with genres: Fiction
+2025-05-24 01:44:17,102 - INFO - Normalized Book: 'Game Changers: A Biography of J. K. Rowling' by Dona Herweck Rice from database with genres: Young Adult Nonfiction
+2025-05-24 01:44:17,102 - INFO - Normalized Book: 'J. K. Rowling' by Joanne Mattern from database with genres: Authors, English
+2025-05-24 01:44:17,103 - INFO - Normalized Book: 'J. K. Rowling' by Jennifer Hunsicker from database with genres: Juvenile Nonfiction
+2025-05-24 01:44:17,103 - INFO - Normalized Book: 'J. K. Rowling' by Charles J. Shields from database with genres: Juvenile Nonfiction
+2025-05-24 01:44:17,103 - INFO - Normalized Book: 'J. K. Rowling' by Colleen A. Sexton from database with genres: Juvenile Nonfiction
+2025-05-24 01:44:17,104 - INFO - Normalized Book: 'J.K. Rowling: A Bibliography 1997-2013' by Philip W. Errington from database with genres: Fiction
+2025-05-24 01:44:17,105 - INFO - Local search for 'harry' found 29 results
+2025-05-24 01:44:35,273 - INFO - External search for 'harry' found 15 results
+2025-05-24 01:44:35,276 - INFO - Normalized Book: 'Harry Potter and the Half-Blood Prince' by J. K. Rowling, Mary Grandpré from openlibrary with genres: Romans, Foster Homes, Orphans, Magie, Adolescence
+2025-05-24 01:44:35,277 - INFO - Normalized Book: 'Les Liaisons dangereuses' by Pierre Choderlos De Laclos from openlibrary with genres: Continental European Fiction (Fictional Works By One Author), Aristocracy (Social Class), France, Fiction, Fiction, Seduction
+2025-05-24 01:44:35,277 - INFO - Normalized Book: 'Macbeth' by William Shakespeare from openlibrary with genres: Kings And Rulers, Regicides, French-Canadian Dialect, Drama, Texts
+2025-05-24 01:44:35,278 - INFO - Normalized Book: 'It Can't Happen Here' by Sinclair Lewis from openlibrary with genres: Newspaper Editors, Anti-Fascist Movements, Drama, Fiction, Presidents
+2025-05-24 01:44:35,278 - INFO - Normalized Book: 'Harry's War' by D. Edward Bradley from googlebooks with genres: Fiction
+2025-05-24 01:44:35,280 - INFO - Normalized Book: 'Harry's Apology' by David Martin Anderson from googlebooks with genres: Fiction
+2025-05-24 01:44:35,281 - INFO - Normalized Book: 'Harry's Mad' by Dick King-smith from googlebooks with genres: Juvenile Fiction
+2025-05-24 01:44:35,281 - INFO - Normalized Book: 'Harry's War - The True Story of the Soldier Prince' by Robert Jobson from googlebooks with genres: Biography & Autobiography
+2025-05-24 01:44:35,282 - INFO - Normalized Book: 'Horrible Harry's Secret' by Suzy Kline from googlebooks with genres: Juvenile Fiction
+2025-05-24 01:44:35,282 - INFO - Search completed for query: 'harry', returned 38 results
+2025-05-24 02:12:48,898 - INFO - Normalized Book: 'Harry Potter and the Other' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,899 - INFO - Normalized Book: 'Critical Perspectives on Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,900 - INFO - Normalized Book: 'Teaching with Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,900 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,900 - INFO - Normalized Book: 'The Harry Potter Generation' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,900 - INFO - Normalized Book: 'Harry Potter and the Philosopher's Stone' by J.k. Rowling from database with genres: Fantasy
+2025-05-24 02:12:48,901 - INFO - Normalized Book: 'Re-Reading Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,901 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,901 - INFO - Normalized Book: 'Harry Potter' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,901 - INFO - Normalized Book: 'Harry Potter (series) 1-7' by Unknown Author from database with genres: Unknown Genre
+2025-05-24 02:12:48,901 - INFO - Local search for 'harry' found 29 results
+2025-05-24 02:12:48,902 - INFO - Search completed for query: 'harry', returned 10 results
