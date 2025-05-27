@@ -35,9 +35,9 @@ import cloudinary.api
 
 # Cloudinary Configuration
 cloudinary.config(
-    cloud_name = "dvrr5avgu",
-    api_key = "356272421526754",
-    api_secret = "VHwlkIReWSq1qICSWfR4nLvAj8I"
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key = os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET', '')
 )
 
 # Media Storage Configuration
@@ -47,10 +47,10 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#ej51h&fkjahb42qb2o^k&vxt8a50q8=0fqm__z_!ebp!8=(3v'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Security settings for development
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
@@ -59,7 +59,7 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
 # Update ALLOWED_HOSTS for local development
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -100,7 +100,7 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
-    "SIGNING_KEY": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # generate a key and replace me
+    "SIGNING_KEY": os.environ.get('JWT_SIGNING_KEY', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'),  # generate a key and replace me
     "ALGORITHM": "HS512",
 }
 
@@ -159,12 +159,12 @@ WSGI_APPLICATION = 'BookNest.wsgi.application'
 
 DATABASES = {
     'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BookNestV3',  
-        'USER': 'postgres',  
-        'PASSWORD': '123456', 
-        'HOST': 'localhost', 
-        'PORT': '5432',  
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'BookNestV3'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

@@ -4,7 +4,7 @@ from .settings import *
 # Override settings for Docker environment
 
 # Security
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#ej51h&fkjahb42qb2o^k&vxt8a50q8=0fqm__z_!ebp!8=(3v')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Allowed hosts
@@ -24,9 +24,9 @@ DATABASES = {
 
 # Cloudinary configuration from environment
 cloudinary.config(
-    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', 'dvrr5avgu'),
-    api_key=os.environ.get('CLOUDINARY_API_KEY', '356272421526754'),
-    api_secret=os.environ.get('CLOUDINARY_API_SECRET', 'VHwlkIReWSq1qICSWfR4nLvAj8I')
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
 # Static files configuration for Docker

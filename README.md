@@ -161,9 +161,20 @@ docker system prune -a
 docker-compose build --no-cache
 ```
 
+## 🔒 Security First Setup
+
+**IMPORTANT**: Before running the application, please follow the security setup:
+
+1. **Copy environment template**: `cp .env.example .env`
+2. **Generate secure keys**: `python generate_keys.py`
+3. **Update your .env file** with the generated keys and your actual credentials
+4. **Read the security guide**: See [SECURITY.md](SECURITY.md) for detailed instructions
+
+⚠️ **Never commit your .env file or any files containing real secrets to version control!**
+
 ## 📱 API Endpoints
 
-The application provides a comprehensive REST API. Visit http://localhost:8000/api/schema/swagger-ui/ for interactive API documentation.
+The application provides a comprehensive REST API. Visit http://localhost:8000/swagger/ for interactive API documentation.
 
 ## 🛠 Technology Stack
 
