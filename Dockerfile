@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Set work directory
 WORKDIR /app
-
+ENV PYTHONPATH="/app:$PYTHONPATH"
 # Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
