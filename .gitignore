@@ -213,12 +213,7 @@ books.log
 # Media files (if using local storage)
 uploads/
 
-# Machine learning models
-*.pkl
-*.joblib
-*.h5
-*.model
-recommendation_models/
+
 
 # Jupyter notebooks
 *.ipynb
