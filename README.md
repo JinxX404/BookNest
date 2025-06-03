@@ -28,8 +28,9 @@ BookNest is a Django REST Framework application that serves as an alternative to
    ```bash
    # Basic setup (Django + PostgreSQL)
    docker-compose up --build
-   
-   # With pgAdmin for database management
+   ```
+<!--    
+    # With pgAdmin for database management
    docker-compose --profile admin up --build
    
    # With Redis for caching
@@ -37,7 +38,7 @@ BookNest is a Django REST Framework application that serves as an alternative to
    
    # Full setup with all services
    docker-compose --profile admin --profile cache up --build
-   ```
+   ``` -->
 
 4. **Access the application**
    - Django API: http://localhost:8000
@@ -104,7 +105,7 @@ Key environment variables in `.env`:
   - `CLOUDINARY_API_KEY`: Your Cloudinary API key
   - `CLOUDINARY_API_SECRET`: Your Cloudinary API secret
 
-### Development
+<!-- ### Development
 
 For development with live code reloading:
 
@@ -183,7 +184,7 @@ The application provides a comprehensive REST API. Visit http://localhost:8000/s
 - **Authentication**: JWT with django-allauth
 - **Media Storage**: Cloudinary
 - **API Documentation**: drf-spectacular
-- **Containerization**: Docker & Docker Compose
+- **Containerization**: Docker & Docker Compose -->
 
 ## 📄 License
 
