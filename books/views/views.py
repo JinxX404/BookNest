@@ -63,22 +63,26 @@ class BookDetailAPIView(generics.RetrieveAPIView):
     serializer_class = BookSerializer
 
 #PRIV
+
 class BookDeleteAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 #PRIV
+
 class BookUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 #PRIV
+
 class BookCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
 
 
 class AuthorListAPIView(generics.ListAPIView):
@@ -101,12 +105,14 @@ class AuthorDetailAPIView(generics.RetrieveAPIView):
     serializer_class = AuthorSerializer
 
 #PRIV
+
 class AuthorDeleteAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
 #PRIV
+
 class AuthorUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = Author.objects.all()

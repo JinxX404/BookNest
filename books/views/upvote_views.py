@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Count
 from django.contrib.auth import get_user_model
-
 from books.models import BookReview, ReviewUpvote
 from books.serializers.review_serializers import ReviewUpvoteSerializer, BookReviewSerializer
 
@@ -89,6 +88,7 @@ class ReviewUpvoteDeleteAPIView(APIView):
                 {'error': 'You have not upvoted this review'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
 
 class ReviewUpvoteToggleAPIView(APIView):

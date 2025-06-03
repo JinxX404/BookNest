@@ -9,6 +9,7 @@ from books.utils.book_normalizer import BookNormalizer
 from books.logging_config import logger
 
 
+
 class BookSuggestionAPIView(APIView):
     """
     API view for getting book title suggestions using PostgreSQL.

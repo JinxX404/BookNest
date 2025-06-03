@@ -182,7 +182,6 @@ Thumbs.db
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
 staticfiles/
 static/
 
@@ -212,7 +211,6 @@ recommendation.log
 books.log
 
 # Media files (if using local storage)
-media/
 uploads/
 
 # Machine learning models
@@ -220,7 +218,6 @@ uploads/
 *.joblib
 *.h5
 *.model
-models/
 recommendation_models/
 
 # Jupyter notebooks

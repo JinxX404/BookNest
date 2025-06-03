@@ -25,6 +25,7 @@ class ReadingListAPIView(generics.ListAPIView):
         return ReadingList.objects.filter(privacy='public').order_by('-created_at')
 
 
+
 class ReadingListDetailAPIView(generics.RetrieveAPIView):
     """
     API endpoint that allows a specific reading list to be viewed.
@@ -39,6 +40,7 @@ class ReadingListDetailAPIView(generics.RetrieveAPIView):
                 Q(privacy='public') | Q(profile__user=self.request.user)
             )
         return ReadingList.objects.filter(privacy='public')
+
 
 
 class ReadingListCreateAPIView(generics.CreateAPIView):
@@ -66,6 +68,7 @@ class ReadingListUpdateAPIView(generics.UpdateAPIView):
         return ReadingList.objects.filter(profile__user=self.request.user)
 
 
+
 class ReadingListDeleteAPIView(generics.DestroyAPIView):
     """
     API endpoint that allows reading lists to be deleted.
@@ -79,6 +82,7 @@ class ReadingListDeleteAPIView(generics.DestroyAPIView):
         return ReadingList.objects.filter(profile__user=self.request.user)
 
 
+
 class ReadingListBookOperationsAPIView(APIView):
     """
     API endpoint that allows books to be added to or removed from reading lists.
@@ -86,6 +90,7 @@ class ReadingListBookOperationsAPIView(APIView):
     """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     
+   
     def post(self, request, *args, **kwargs):
         """
         Add a book to a reading list
@@ -118,7 +123,7 @@ class ReadingListBookOperationsAPIView(APIView):
             {"message": f'This book is already in "{reading_list.name}"'}, 
             status=status.HTTP_200_OK
         )
-    
+
     def delete(self, request, *args, **kwargs):
         """
         Remove a book from a reading list

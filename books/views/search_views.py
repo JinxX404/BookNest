@@ -8,6 +8,7 @@ from books.utils.book_normalizer import BookNormalizer
 from books.logging_config import logger
 
 
+
 class BookSearchAPIView(APIView):
     """
     API view for searching books using PostgreSQL full-text search.

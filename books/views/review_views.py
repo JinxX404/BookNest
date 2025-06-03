@@ -100,7 +100,6 @@ class BookReviewCreateAPIView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-
 class BookReviewUpdateAPIView(generics.UpdateAPIView):
     """
     API endpoint that allows book reviews to be updated.
@@ -187,6 +186,7 @@ class BookRatingDetailAPIView(generics.RetrieveAPIView):
         return BookRating.objects.all()
 
 
+
 class BookRatingCreateAPIView(generics.CreateAPIView):
     """
     API endpoint that allows book ratings to be created.
@@ -202,6 +202,7 @@ class BookRatingCreateAPIView(generics.CreateAPIView):
             serializer.save(user=self.request.user, book=book)
         except Book.DoesNotExist:
             raise ValidationError({'book': 'Book does not exist'})
+
 
 
 class BookRatingUpdateAPIView(generics.UpdateAPIView):
