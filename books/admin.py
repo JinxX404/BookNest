@@ -4,6 +4,10 @@ from .models import Book, Author, BookGenre, BookAuthor, ReadingList, ReadingLis
 from users.models import Profile , ProfileInterest , ProfileSocialLink , CustomUser
 from follows.models import Follow
 from notifications.models import Notification , NotificationType
+# from django.views.decorators.csrf import csrf_exempt
+
+# admin.site.login = csrf_exempt(admin.site.login)
+
 
 admin.site.register(Book)
 admin.site.register(Author)

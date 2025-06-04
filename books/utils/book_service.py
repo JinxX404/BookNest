@@ -3,8 +3,12 @@ import logging
 import requests
 from django.db import transaction
 from django.utils import timezone
-from books.models import Book, Author, BookAuthor, BookGenre
+from books.models import Book, Author, BookAuthor, BookGenre, Genre
 from books.utils.external_api_clients import search_external_apis
+from datetime import datetime
+from dateutil import parser
+from django.db.models import Q
+from django.db.models.functions import Length
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -26,22 +30,48 @@ logger = logging.getLogger(__name__)
 #         return []
 
 
-def search_books(query, page=1, page_size=10, filters=None):
-    """
-    Search for books using the new PostgreSQL-based search service.
-    This function is kept for backward compatibility.
+# def search_books(query, page=1, page_size=10, filters=None):
+#     """
+#     Search for books using the new PostgreSQL-based search service.
+#     This function is kept for backward compatibility.
     
-    Args:
-        query (str): Search query
-        page (int): Page number (1-indexed)
-        page_size (int): Number of results per page
-        filters (dict): Optional filters for the search
+#     Args:
+#         query (str): Search query
+#         page (int): Page number (1-indexed)
+#         page_size (int): Number of results per page
+#         filters (dict): Optional filters for the search
     
-    Returns:
-        tuple: (list of books, total count)
-    """
-    from books.utils.search_service import PostgreSQLSearchService
-    return PostgreSQLSearchService.search_books(query, page, page_size, filters)
+#     Returns:
+#         tuple: (list of books, total count)
+#     """
+#     from books.utils.search_service import PostgreSQLSearchService
+#     return PostgreSQLSearchService.search_books(query, page, page_size, filters)
+
+
+def parse_date(date_value):
+    """Parse date from various formats into YYYY-MM-DD format."""
+    if not date_value:
+        return None
+        
+    try:
+        # Handle integer years (e.g., 1998)
+        if isinstance(date_value, int):
+            return datetime(date_value, 1, 1).date()
+            
+        # Handle string dates
+        if isinstance(date_value, str):
+            # Handle BC dates (e.g., "c. 431 BC")
+            if 'BC' in date_value.upper():
+                year = int(''.join(filter(str.isdigit, date_value)))
+                return datetime(-year, 1, 1).date()
+                
+            # Try parsing with dateutil
+            return parser.parse(date_value).date()
+            
+        return None
+    except Exception as e:
+        logger.warning(f"Could not parse date: {date_value}, error: {e}")
+        return None
 
 
 @transaction.atomic
@@ -83,34 +113,12 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
             cover_img=book_data.get('cover_img'),
             description=book_data.get('description', '').strip(),  # Clean description
             number_of_pages=book_data.get('number_of_pages'),
-            average_rate=None  # No ratings yet
+            average_rate=None,  # No ratings yet
+            publication_date=parse_date(book_data.get('publication_date')),
+            external_id=book_data.get('id'),
+            external_source=book_data.get('source', 'external'),
+            source='external'
         )
-        
-        # Handle publication date (might be just a year from some APIs)
-        try:
-            pub_date = book_data.get('publication_date')
-            if pub_date and isinstance(pub_date, int):
-                from datetime import date
-                book.publication_date = date(pub_date, 1, 1)  # Default to January 1st
-            elif pub_date and isinstance(pub_date, str):
-                # Try to parse string date in various formats
-                from dateutil.parser import parse
-                try:
-                    book.publication_date = parse(pub_date).date()
-                except (ValueError, TypeError):
-                    # If parsing fails, try to extract just the year
-                    import re
-                    year_match = re.search(r'\d{4}', pub_date)
-                    if year_match:
-                        from datetime import date
-                        book.publication_date = date(int(year_match.group()), 1, 1)
-                    else:
-                        book.publication_date = None
-            else:
-                book.publication_date = pub_date
-        except Exception as e:
-            logger.warning(f"Error processing publication date: {e}")
-            book.publication_date = None
         
         book.save()
         
@@ -121,101 +129,135 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
         if book_data.get('authors'):
             for author_data in book_data.get('authors', []):
                 try:
+                    # Initialize variables
+                    author_name = None
+                    author_bio = None
+                    author_birth_date = None
+                    author_data_quality = 'minimal'
+                    existing_author = None
+                    
                     # Handle both string author names and author dictionaries
                     if isinstance(author_data, str):
                         author_name = author_data.strip()
                         if not author_name:
                             continue
-                            
-                        # Normalize author name (Title Case)
-                        author_name = ' '.join(word.capitalize() for word in author_name.split())
-                        author_bio = None
-                        author_birth_date = None
-                        author_data_quality = 'minimal'
                     else:
                         # Extract author details from dictionary
                         author_name = author_data.get('name', '').strip()
                         if not author_name:
                             continue
-                            
-                        # Normalize author name (Title Case)
-                        author_name = ' '.join(word.capitalize() for word in author_name.split())
                         author_bio = author_data.get('bio', '')
-                        author_birth_date = author_data.get('birth_date')
+                        author_birth_date = parse_date(author_data.get('birth_date'))
                         
                         # Determine data quality
                         if author_bio and author_birth_date:
                             author_data_quality = 'complete'
                         elif author_bio or author_birth_date:
                             author_data_quality = 'partial'
-                        else:
-                            author_data_quality = 'minimal'
                     
-                    # Check if author already exists (case-insensitive search)
-                    similar_authors = Author.objects.filter(name__iexact=author_name)
+                    # Normalize author name (Title Case)
+                    author_name = ' '.join(word.capitalize() for word in author_name.split())
                     
-                    if similar_authors.exists():
-                        # Use existing author
-                        author = similar_authors.first()
+                    # First try exact match
+                    existing_author = Author.objects.filter(name__iexact=author_name).first()
+                    
+                    if not existing_author:
+                        # Try to find similar authors
+                        # Look for authors with similar names (containing the same words in any order)
+                        name_words = set(author_name.lower().split())
+                        similar_authors = Author.objects.annotate(
+                            name_length=Length('name')
+                        ).filter(
+                            Q(name__icontains=author_name) |  # Contains the full name
+                            Q(name__iregex=r'\b(' + '|'.join(name_words) + r')\b')  # Contains any of the words
+                        ).order_by('-name_length')  # Prefer longer names (more specific)
                         
+                        if similar_authors.exists():
+                            # Use the most similar author (longest name match)
+                            existing_author = similar_authors.first()
+                            logger.info(f"Found similar author: '{existing_author.name}' for '{author_name}'")
+                    
+                    if existing_author:
                         # Update author data if current data is better quality
                         update_fields = []
                         
                         # Only update fields if they're empty in the database but we have data
-                        if (author.bio is None or author.bio == '') and author_bio:
-                            author.bio = author_bio
+                        if (existing_author.bio is None or existing_author.bio == '') and author_bio:
+                            existing_author.bio = author_bio
                             update_fields.append('bio')
                             
                             # Update data quality if needed
-                            if author.data_quality == 'minimal':
-                                author.data_quality = 'partial' if not author.date_of_birth else 'complete'
+                            if existing_author.data_quality == 'minimal':
+                                existing_author.data_quality = 'partial' if not existing_author.date_of_birth else 'complete'
                                 update_fields.append('data_quality')
                             
-                        if author.date_of_birth is None and author_birth_date:
-                            author.date_of_birth = author_birth_date
+                        if existing_author.date_of_birth is None and author_birth_date:
+                            existing_author.date_of_birth = author_birth_date
                             update_fields.append('date_of_birth')
                             
                             # Update data quality if needed
-                            if author.data_quality == 'minimal':
-                                author.data_quality = 'partial' if not author.bio else 'complete'
+                            if existing_author.data_quality == 'minimal':
+                                existing_author.data_quality = 'partial' if not existing_author.bio else 'complete'
                                 update_fields.append('data_quality')
                             
                         if update_fields:
-                            author.last_updated = timezone.now()
+                            existing_author.last_updated = timezone.now()
                             update_fields.append('last_updated')
-                            author.save(update_fields=update_fields)
+                            existing_author.save(update_fields=update_fields)
+                            
+                        author = existing_author
                     else:
                         # Create new author with normalized data
                         author = Author.objects.create(
                             name=author_name,
                             bio=author_bio or '',
                             date_of_birth=author_birth_date,
-                            number_of_books=0,  # Will be incremented by BookAuthor.save()
+                            number_of_books=0,  # Will be updated below
                             data_quality=author_data_quality,
                             last_updated=timezone.now()
                         )
                     
-                    # Create book-author relationship (this will automatically increment author.number_of_books)
-                    BookAuthor.objects.create(book=book, author=author)
-                    authors_added = True
+                    # Check if book-author relationship already exists
+                    if not BookAuthor.objects.filter(book=book, author=author).exists():
+                        # Create book-author relationship
+                        BookAuthor.objects.create(book=book, author=author)
+                        # Update author's book count
+                        author.number_of_books = BookAuthor.objects.filter(author=author).count()
+                        author.save(update_fields=['number_of_books'])
+                        authors_added = True
+                        logger.debug(f"Added author '{author.name}' to book {book.isbn13}")
+                    else:
+                        logger.debug(f"Author '{author.name}' already associated with book {book.isbn13}")
                     
                 except Exception as e:
-                    logger.warning(f"Error adding author '{author_name if isinstance(author_data, str) else author_data.get('name', '')}' to book: {e}")
+                    logger.warning(f"Error adding author '{author_name if author_name else 'Unknown'}' to book: {e}")
                     # Continue with other authors even if one fails
         
         # If no authors were added, create a default author
         if not authors_added:
-            default_author, _ = Author.objects.get_or_create(
-                name="Unknown Author",
-                defaults={
-                    'bio': "No biography available",
-                    'number_of_books': 0,  # Will be incremented by BookAuthor.save()
-                    'data_quality': 'minimal',
-                    'last_updated': timezone.now()
-                }
-            )
-            BookAuthor.objects.create(book=book, author=default_author)
-            logger.warning(f"No valid authors provided for book {book.isbn13}, using default author")
+            try:
+                # First try to find an existing default author
+                default_author = Author.objects.filter(name="Unknown Author").first()
+                
+                if not default_author:
+                    # If no default author exists, create one
+                    default_author = Author.objects.create(
+                        name="Unknown Author",
+                        bio="No biography available",
+                        number_of_books=0,  # Will be updated below
+                        data_quality='minimal',
+                        last_updated=timezone.now()
+                    )
+                
+                if not BookAuthor.objects.filter(book=book, author=default_author).exists():
+                    BookAuthor.objects.create(book=book, author=default_author)
+                    # Update default author's book count
+                    default_author.number_of_books = BookAuthor.objects.filter(author=default_author).count()
+                    default_author.save(update_fields=['number_of_books'])
+                    logger.warning(f"No valid authors provided for book {book.isbn13}, using default author")
+            except Exception as e:
+                logger.error(f"Error handling default author: {e}")
+                # Continue without default author if there's an error
         
         # Process genres
         genres_added = False
@@ -225,57 +267,64 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                     if genre_name and isinstance(genre_name, str):
                         # Normalize genre name (trim whitespace, capitalize first letter)
                         genre_name = genre_name.strip().title()
-                        if genre_name:
-                            # Handle common genre variations and abbreviations
-                            genre_mapping = {
-                                "Sci-Fi": "Science Fiction",
-                                "Scifi": "Science Fiction",
-                                "SF": "Science Fiction",
-                                "Sci Fi": "Science Fiction",
-                                "YA": "Young Adult",
-                                "Historical": "Historical Fiction",
-                                "Hist Fic": "Historical Fiction",
-                                "Hist-Fic": "Historical Fiction",
-                                "Histfic": "Historical Fiction",
-                                "Lit": "Literature",
-                                "Classic Lit": "Classic Literature",
-                                "Classics": "Classic Literature",
-                                "Contemp": "Contemporary",
-                                "Contemp Fic": "Contemporary Fiction",
-                                "Contemp Fiction": "Contemporary Fiction",
-                                "Nonfic": "Non-Fiction",
-                                "Non Fic": "Non-Fiction",
-                                "Non Fiction": "Non-Fiction",
+                        if not genre_name:
+                            continue
+
+                        # Get or create the primary genre
+                        primary_genre, created = Genre.objects.get_or_create(
+                            name__iexact=genre_name,
+                            defaults={
+                                'name': genre_name,
+                                'description': f"Books in the {genre_name} category"
                             }
+                        )
+
+                        # Handle genre relationships and hierarchies
+                        if created:
+                            # For new genres, try to find related genres
+                            related_genres = Genre.objects.filter(
+                                name__icontains=genre_name
+                            ).exclude(id=primary_genre.id)
                             
-                            # Apply mapping if genre is in the dictionary
-                            if genre_name in genre_mapping:
-                                genre_name = genre_mapping[genre_name]
-                            
-                            # Get or create genre
-                            genre, _ = Genre.objects.get_or_create(
-                                name__iexact=genre_name,
-                                defaults={'name': genre_name}
-                            )
-                            
-                            # Create book-genre relationship (using the ensure_book_has_genre method)
+                            if related_genres.exists():
+                                # If we found related genres, use the most specific one
+                                # (the one with the longest name, as it's likely more specific)
+                                most_specific = max(related_genres, key=lambda g: len(g.name))
+                                if len(most_specific.name) > len(genre_name):
+                                    # Use the more specific genre instead
+                                    primary_genre = most_specific
+                                    logger.info(f"Using more specific genre '{most_specific.name}' instead of '{genre_name}'")
+                                else:
+                                    # Update the new genre's description to reference related genres
+                                    related_names = [g.name for g in related_genres]
+                                    primary_genre.description = f"Books in the {genre_name} category. Related to: {', '.join(related_names)}"
+                                    primary_genre.save()
+
+                        # Check if book already has this genre
+                        if not BookGenre.objects.filter(book=book, genre=primary_genre).exists():
                             try:
-                                BookGenre.objects.create(book=book, genre=genre)
+                                BookGenre.objects.create(book=book, genre=primary_genre)
                                 genres_added = True
+                                logger.debug(f"Added genre '{primary_genre.name}' to book {book.isbn13}")
                             except Exception as e:
                                 # Handle potential duplicate key error
                                 if 'unique constraint' not in str(e).lower():
                                     raise
                                 # If it's a duplicate, just continue
+                                logger.debug(f"Genre '{primary_genre.name}' already exists for book {book.isbn13}")
+
                 except Exception as e:
                     logger.warning(f"Error adding genre '{genre_name}' to book: {e}")
                     # Continue with other genres even if one fails
-        
+
         # If no genres were added, add default genre
         if not genres_added:
             default_genre, _ = Genre.objects.get_or_create(
-                name="Unknown Genre",
-                defaults={'name': "Unknown Genre"}
+                name="Uncategorized",
+                defaults={
+                    'name': "Uncategorized",
+                    'description': "Books that haven't been categorized yet"
+                }
             )
             try:
                 BookGenre.objects.create(book=book, genre=default_genre)
@@ -284,7 +333,7 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                 # Handle potential duplicate key error
                 if 'unique constraint' not in str(e).lower():
                     logger.error(f"Error adding default genre to book: {e}")
-        
+
         # Ensure book has at least one genre
         BookGenre.ensure_book_has_genre(book)
         

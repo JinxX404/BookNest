@@ -1,8 +1,12 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.operations import CreateExtension
 from users.models.profile import Profile
 import manage
+from django.utils import timezone
 
 
 class Author(models.Model):
@@ -42,17 +46,33 @@ class Book(models.Model):
     average_rate = models.DecimalField(
         max_digits=3, decimal_places=2, null=True, blank=True
     )
-    authors = models.ManyToManyField('books.Author' , related_name='books' , through='BookAuthor')
-
-    # objects = BookManager()
+    authors = models.ManyToManyField('books.Author', related_name='books', through='BookAuthor')
     
-
+    # Add search vector field for full-text search
+    search_vector = SearchVectorField(null=True)
+    
+    # Add tracking fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    source = models.CharField(
+        max_length=20,
+        choices=[
+            ('database', 'Database'),
+            ('external', 'External API'),
+            ('user', 'User Added')
+        ],
+        default='database'
+    )
+    external_id = models.CharField(max_length=100, null=True, blank=True)
+    external_source = models.CharField(max_length=50, null=True, blank=True)
+    
     class Meta:
         db_table = "book"
         indexes = [
-            # Full-text search indexes using GIN (requires PostgreSQL)
-            models.Index(fields=['title'], name='book_title_idx'),
-            models.Index(fields=['description'], name='book_description_idx'),
+            # Full-text search indexes using GIN with gin_trgm_ops
+            GinIndex(fields=['search_vector'], name='book_search_vector_idx'),
+            GinIndex(fields=['title'], name='book_title_gin_idx', opclasses=['gin_trgm_ops']),
+            GinIndex(fields=['description'], name='book_description_gin_idx', opclasses=['gin_trgm_ops']),
             # B-tree indexes for filtering
             models.Index(fields=['average_rate'], name='book_rating_idx'),
             models.Index(fields=['publication_date'], name='book_pub_date_idx'),
@@ -61,6 +81,10 @@ class Book(models.Model):
             # Composite indexes for common query patterns
             models.Index(fields=['average_rate', 'publication_date'], name='book_rating_date_idx'),
             models.Index(fields=['title', 'average_rate'], name='book_title_rating_idx'),
+            # New indexes for tracking
+            models.Index(fields=['last_updated'], name='book_last_updated_idx'),
+            models.Index(fields=['source'], name='book_source_idx'),
+            models.Index(fields=['external_source'], name='book_external_source_idx'),
         ]
         ordering = ['-average_rate', 'title']
     
@@ -402,6 +426,20 @@ class ReviewUpvote(models.Model):
 
     def __str__(self):
         return f'{self.user.username} upvoted review {self.review.review_id}'
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(fields=['name'], name='genre_name_gin_idx', opclasses=['gin_trgm_ops']),
+        ]
+
+    def __str__(self):
+        return self.name
 
 
 

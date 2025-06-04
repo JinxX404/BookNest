@@ -39,6 +39,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - .:/app
       - ./media:/app/media
       - ./logs:/app/logs
     depends_on:
@@ -47,6 +48,20 @@ services:
     networks:
       - booknest_network
 
+
+  celery:
+    build: .
+    container_name: booknest_celery
+    command: celery -A BookNest worker --loglevel=info
+    depends_on:
+      - web
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=BookNest.docker_settings
+    volumes:
+      - .:/app
+    networks:
+      - booknest_network
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: booknest_pgadmin
@@ -76,8 +91,7 @@ services:
       - redis_data:/data
     networks:
       - booknest_network
-    profiles:
-      - cache
+
 
 volumes:
   postgres_data:
