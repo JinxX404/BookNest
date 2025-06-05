@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from books.models import Book, Author, ReadingList, BookGenre, BookAuthor
+from books.models import Book, Author, ReadingList, BookAuthor , Genre
 
 
 class BookGenreSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BookGenre
-        fields = ["genre"]
+        model = Genre
+        fields = ["name"]
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -45,10 +45,8 @@ class BookSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
 
         rep = super().to_representation(instance)
-        # update the genres field to be a list of genres not dictionary of dictionaries
-        rep["genres"] = list(
-            BookGenre.objects.filter(book=instance).values_list("genre", flat=True)
-        )
+        # Replace genre names from the M2M field directly
+        rep["genres"] = list(instance.genres.values_list("name", flat=True))
         return rep
 
     # def get_genres(self, obj):
@@ -64,32 +62,21 @@ class BookSerializer(serializers.ModelSerializer):
             author, created = Author.objects.get_or_create(**author_data) # get or create author instance from the author data 
             BookAuthor.objects.create(book=book, author=author) # create the book author instance with the book and author instances
 
-        for genre in genres_data: 
-            BookGenre.objects.create(book=book, genre=genre) 
-
+        for genre_name in genres_data:
+            genre, created = Genre.objects.get_or_create(name=genre_name)
+            book.genres.add(genre)
+            
         return book 
 
     def update(self, instance, validated_data):
         authors_data = validated_data.pop("authors" , None)
         genres_data = validated_data.pop("genres", None)
 
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get("description", instance.description)
-        instance.publication_date = validated_data.get(
-            "publication_date", instance.publication_date
-        )
-        instance.number_of_pages = validated_data.get(
-            "number_of_pages", instance.number_of_pages
-        )
-        instance.cover_img = validated_data.get("cover_img", instance.cover_img)
-        instance.number_of_ratings = validated_data.get(
-            "number_of_ratings", instance.number_of_ratings
-        )
-        instance.average_rate = validated_data.get(
-            "average_rate", instance.average_rate
-        )
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
-
+        
+        
         if authors_data is not None:
             instance.authors.clear()
             for author_data in authors_data:
@@ -97,9 +84,11 @@ class BookSerializer(serializers.ModelSerializer):
                 BookAuthor.objects.create(book=instance, author=author)
 
         if genres_data is not None:
-            BookGenre.objects.filter(book=instance).delete()
-            for genre in genres_data:
-                BookGenre.objects.create(book=instance, genre=genre)
+            genre_instances = []
+            for genre_name in genres_data:
+                genre, created = Genre.objects.get_or_create(name=genre_name)
+                genre_instances.append(genre)
+            instance.genres.set(genre_instances)
 
         return instance
 

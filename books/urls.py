@@ -12,6 +12,8 @@ from books.views.views import (
     BookUpdateAPIView,
     BookCreateAPIView,
     AuthorBookListAPIView,
+    GenreListAPIView,
+    GenreBookListAPIView,
 )
 from books.views.search_views import BookSearchAPIView
 from books.views.suggestion_views import BookSuggestionAPIView
@@ -83,6 +85,10 @@ urlpatterns = [
     path("authors/<int:pk>/books/", AuthorBookListAPIView.as_view(), name="author-books-by-id"),
     path("authors/name/<str:name>/books/", AuthorBookListAPIView.as_view(), name="author-books-by-name"),
     
+    # Genre endpoints
+    path("genres/", GenreListAPIView.as_view(), name="genres-list-api"),
+    path("genres/<int:pk>/books/", GenreBookListAPIView.as_view(), name="genre-books-by-id"),
+    path("genres/name/<str:name>/books/", GenreBookListAPIView.as_view(), name="genre-books-by-name"),
 
     # Review API endpoints 
     path("reviews/", BookReviewAPIView.as_view(), name="api-review-list"),

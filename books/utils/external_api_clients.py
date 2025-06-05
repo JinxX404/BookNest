@@ -164,7 +164,7 @@ class OpenLibraryClient:
                     "publication_date": doc.get("first_publish_year"),
                     "number_of_pages": doc.get("number_of_pages_median"),
                     "description": doc.get("description", ""),
-                    "genres": doc.get("subject", [])[:5] if doc.get("subject") else [],
+                    "genres": doc.get("subject", [])[:10] if doc.get("subject") else [],
                     "source": "openlibrary"
                 }
                 

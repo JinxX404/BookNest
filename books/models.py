@@ -47,6 +47,7 @@ class Book(models.Model):
         max_digits=3, decimal_places=2, null=True, blank=True
     )
     authors = models.ManyToManyField('books.Author', related_name='books', through='BookAuthor')
+    genres = models.ManyToManyField('books.Genre', related_name='books')
     
     # Add search vector field for full-text search
     search_vector = SearchVectorField(null=True)
@@ -134,53 +135,57 @@ class BookAuthor(models.Model):
             author.number_of_books = models.F('number_of_books') - 1
             author.save(update_fields=['number_of_books'])
 
-class BookGenre(models.Model):
-    id = models.AutoField(primary_key=True)
+# class BookGenre(models.Model):
+#     id = models.AutoField(primary_key=True)
 
-    book = models.ForeignKey(
-        'books.Book',
-        on_delete=models.CASCADE,
-        db_column='isbn13',
-        related_name='genres'
-    )
-    genre = models.TextField(max_length=255)
+#     book = models.ForeignKey(
+#         'books.Book',
+#         on_delete=models.CASCADE,
+#         db_column='isbn13',
+#         related_name='genres'
+#     )
+#     genre = models.ForeignKey(
+#         'books.Genre',
+#         on_delete=models.CASCADE,
+#         related_name='book_genres'
+#     )
 
-    class Meta:
-        db_table = 'book_genre'
-        indexes = [
-            models.Index(fields=['genre'], name='book_genre_idx'),
-            models.Index(fields=['book', 'genre'], name='book_genre_composite_idx'),
-        ]
-        unique_together = ('book', 'genre')  # Prevent duplicate genres for the same book
+#     class Meta:
+#         db_table = 'book_genre'
+#         indexes = [
+#             models.Index(fields=['genre'], name='book_genre_idx'),
+#             models.Index(fields=['book', 'genre'], name='book_genre_composite_idx'),
+#         ]
+#         unique_together = ('book', 'genre')  # Prevent duplicate genres for the same book
     
-    def __str__(self):
-        return self.genre
+#     def __str__(self):
+#         return self.genre
         
-    @classmethod
-    def ensure_book_has_genre(cls, book, genre=None):
-        """Ensure that a book has at least one genre, adding the provided genre or 'Unknown Genre' if none exists.
+#     @classmethod
+#     def ensure_book_has_genre(cls, book, genre=None):
+#         """Ensure that a book has at least one genre, adding the provided genre or 'Unknown Genre' if none exists.
         
-        Args:
-            book: The Book instance to check
-            genre: Optional Genre instance to add if no genres exist
+#         Args:
+#             book: The Book instance to check
+#             genre: Optional Genre instance to add if no genres exist
             
-        Returns:
-            bool: True if a genre was added, False if the book already had genres
-        """
-        if not cls.objects.filter(book=book).exists():
-            # If a specific genre is provided, use it; otherwise use 'Unknown Genre'
-            genre_name = genre.name if genre else 'Unknown Genre'
-            try:
-                cls.objects.create(book=book, genre=genre_name)
-                return True
-            except Exception as e:
-                # Handle potential duplicate key error
-                if 'unique constraint' not in str(e).lower():
-                    # Re-raise if it's not a duplicate issue
-                    raise
-                # If it's a duplicate, just return False
-                return False
-        return False
+#         Returns:
+#             bool: True if a genre was added, False if the book already had genres
+#         """
+#         if not cls.objects.filter(book=book).exists():
+#             # If a specific genre is provided, use it; otherwise use 'Unknown Genre'
+#             genre_name = genre.name if genre else 'Unknown Genre'
+#             try:
+#                 cls.objects.create(book=book, genre=genre_name)
+#                 return True
+#             except Exception as e:
+#                 # Handle potential duplicate key error
+#                 if 'unique constraint' not in str(e).lower():
+#                     # Re-raise if it's not a duplicate issue
+#                     raise
+#                 # If it's a duplicate, just return False
+#                 return False
+#         return False
 
 class ReadingList(models.Model):
 

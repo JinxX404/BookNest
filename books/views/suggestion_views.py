@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
-from books.models import Book, Author, BookGenre
+from books.models import Book, Author
 from books.utils.search_service import PostgreSQLSearchService
 from books.utils.external_api_clients import search_external_apis
 from books.utils.book_normalizer import BookNormalizer

@@ -98,7 +98,7 @@ INSTALLED_APPS = [
 ]
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=90),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -133,7 +133,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-'allauth.account.middleware.AccountMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
+    'users.middleware.ProfileRequiredMiddleware'
 ]
 
 ROOT_URLCONF = 'BookNest.urls'
@@ -223,8 +224,41 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 SITE_ID = 1
 
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# Email configuration
+# Gmail SMTP Configuration (FREE - 500 emails/day)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "jkennen83@gmail.com"  
+EMAIL_HOST_PASSWORD = "txjf ncxu gphp incg"  
+
+# Email settings
+DEFAULT_FROM_EMAIL = "jkennen83@gmail.com"
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Frontend URL for password reset links
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+SITE_NAME = os.environ.get('SITE_NAME', 'BookNest')
+
+# Password reset timeout (1 hour)
+PASSWORD_RESET_TIMEOUT = 3600
+
+# Email subject prefix
+EMAIL_SUBJECT_PREFIX = f'[{SITE_NAME}] '
+
+# Timeout settings
+EMAIL_TIMEOUT = 60
+
+ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
+# END EMAIL SERVER CONFIGURATION 
+
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -273,6 +307,15 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'users': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
     },
 }
 
@@ -282,8 +325,7 @@ else:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "http://localhost:5500"
-        
+        "http://localhost:5500",        
     ]
     
 CORS_ALLOW_CREDENTIALS = True

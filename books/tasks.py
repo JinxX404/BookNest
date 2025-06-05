@@ -1,7 +1,7 @@
 from celery import shared_task
 from django.core.cache import cache
 from django.conf import settings
-from books.models import Book, Author, BookGenre
+from books.models import Book, Author
 from books.utils.external_api_clients import search_external_apis
 from books.utils.book_service import save_external_book
 import logging

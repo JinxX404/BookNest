@@ -75,10 +75,10 @@ class BookSearchAPIView(APIView):
                 except ValueError:
                     return None
             
-            # Author filter
-            author = request.GET.get('author')
-            if author:
-                filters['author'] = author.strip()
+            # Author filter - now supports multiple authors
+            authors = request.GET.get('authors')
+            if authors:
+                filters['author'] = [author.strip() for author in authors.split(',') if author.strip()]
             
             # Number of pages filter
             num_pages = request.GET.get('num_pages')
@@ -112,9 +112,12 @@ class BookSearchAPIView(APIView):
         - min_rating: Minimum rating filter
         - pub_date_from: Publication date from (YYYY-MM-DD)
         - pub_date_to: Publication date to (YYYY-MM-DD)
-        - author: Author name filter
+        - authors: Comma-separated list of author names to filter by
         - num_pages: Minimum number of pages
         - include_external: Whether to include results from external APIs (default: false)
+        
+        Example request:
+        /api/books/search/?q=python&genres=Fiction,Mystery&authors=John Smith,Jane Doe&min_rating=4.0
         """
         try:
             # Validate search parameters
@@ -125,10 +128,10 @@ class BookSearchAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
-            # Generate cache key
+            # # Generate cache key
             cache_key = f"{settings.CACHE_KEY_PREFIX}:search:{hashlib.md5(str(params).encode()).hexdigest()}"
             
-            # Try to get from cache
+            # # Try to get from cache
             cached_response = cache.get(cache_key)
             if cached_response:
                 logger.info(f"Cache hit for search query: {params['query']}")
@@ -163,7 +166,7 @@ class BookSearchAPIView(APIView):
                 'include_external': params['include_external']
             }
             
-            # Cache the response
+            # # Cache the response
             cache.set(cache_key, response_data, settings.CACHE_TTL)
             
             logger.info(f"Search completed for query: '{params['query']}', returned {len(books)} results")

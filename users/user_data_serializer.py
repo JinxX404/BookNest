@@ -5,7 +5,7 @@ from users.models.models import CustomUser
 from follows.models import Follow
 from books.models import (
     Book, Author, ReadingList, ReadingListBooks, 
-    BookRating, BookReview, BookGenre
+    BookRating, BookReview, Genre
 )
 
 
@@ -17,8 +17,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class BookGenreSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BookGenre
-        fields = ['genre']
+        model = Genre
+        fields = ['name']
 
 
 class BookBasicSerializer(serializers.ModelSerializer):

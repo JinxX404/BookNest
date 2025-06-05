@@ -1,5 +1,5 @@
-from books.models import Book , Author 
-from books.serializers.book_serializers import BookSerializer, AuthorSerializer 
+from books.models import Book , Author, Genre
+from books.serializers.book_serializers import BookSerializer, AuthorSerializer, BookGenreSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from drf_spectacular.openapi import AutoSchema
@@ -16,7 +16,7 @@ class BookListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'authors__name': ['icontains' , 'in'],
-        'genres__genre': ['icontains', 'in', 'exact'],
+        'genres__name': ['icontains', 'in', 'exact'],
         'average_rate': ['gte', 'lte'],
         'description': ['icontains'],
         'publication_date': ['exact', 'year', 'month', 'day', 'range'],
@@ -156,5 +156,48 @@ class AuthorBookListAPIView(generics.ListAPIView):
         
         return queryset
     
+
+class GenreListAPIView(generics.ListAPIView):
+    schema = AutoSchema()
+    queryset = Genre.objects.all()
+    serializer_class = BookGenreSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'name': ['icontains', 'exact'],
+    }
+    pagination_class = LimitOffsetPagination
+
+
+class GenreBookListAPIView(generics.ListAPIView):
+    """
+    API endpoint that returns books filtered by genre(s).
+    Supports filtering by single genre or multiple genres.
+    """
+    schema = AutoSchema()
+    serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'authors__name': ['icontains', 'in'],
+        'average_rate': ['gte', 'lte'],
+        'description': ['icontains'],
+        'publication_date': ['exact', 'year', 'month', 'day', 'range'],
+        'number_of_pages': ['gte', 'lte', 'exact'],
+        'title': ['exact', 'icontains', 'istartswith'],
+    }
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        genre_name = self.kwargs.get('name')
+        genre_id = self.kwargs.get('pk')
+        queryset = Book.objects.all().prefetch_related('genres')
+        
+        if genre_id:
+            queryset = queryset.filter(genres__id=genre_id)
+        elif genre_name:
+            queryset = queryset.filter(genres__name__icontains=genre_name)
+        else:
+            raise NotFound("Provide either genre ID or name")
+            
+        return queryset.distinct()
 
 

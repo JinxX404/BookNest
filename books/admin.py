@@ -1,6 +1,6 @@
 from django.contrib import admin
 # Register your models here.
-from .models import Book, Author, BookGenre, BookAuthor, ReadingList, ReadingListBooks, BookRating, BookReview
+from .models import Book, Author, BookAuthor, ReadingList, ReadingListBooks, BookRating, BookReview
 from users.models import Profile , ProfileInterest , ProfileSocialLink , CustomUser
 from follows.models import Follow
 from notifications.models import Notification , NotificationType
@@ -11,7 +11,7 @@ from notifications.models import Notification , NotificationType
 
 admin.site.register(Book)
 admin.site.register(Author)
-admin.site.register(BookGenre)
+# admin.site.register(BookGenre)
 admin.site.register(BookAuthor)
 admin.site.register(ReadingList)
 admin.site.register(ReadingListBooks)

@@ -4,7 +4,8 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.conf import settings
-from books.models import Book, Author, BookGenre
+from django.db.models import Q
+from books.models import Book, Author, Genre
 from books.utils.external_api_clients import OpenLibraryClient, GoogleBooksClient, search_external_apis
 from books.utils.book_service import save_external_book
 import logging
@@ -85,10 +86,9 @@ class PostgreSQLSearchService:
             cache.set(cache_key, (books, total_count), settings.CACHE_TTL)
             return books, total_count
         
-
+        logger.info(f"No local results for query: {query}, searching external APIs")
         return PostgreSQLSearchService._search_external_apis_parallel(query, page, page_size)
-
-        # # If no local results, check if we should fetch from external APIs
+        # If no local results, check if we should fetch from external APIs
         # should_fetch_external = PostgreSQLSearchService._should_fetch_external(query)
         
         # if should_fetch_external:
@@ -98,43 +98,43 @@ class PostgreSQLSearchService:
         #     logger.info(f"No local results for query: {query}, skipping external API search")
         #     return [], 0
     
-    @staticmethod
-    def _should_fetch_external(query: str) -> bool:
-        """
-        Determine if we should fetch from external APIs based on various factors.
-        """
-        try:
-            # Check if query is too short
-            if len(query.strip()) < 3:
-                logger.debug(f"Query too short: {query}")
-                return False
+    # @staticmethod
+    # def _should_fetch_external(query: str) -> bool:
+    #     """
+    #     Determine if we should fetch from external APIs based on various factors.
+    #     """
+    #     try:
+    #         # Check if query is too short
+    #         if len(query.strip()) < 3:
+    #             logger.debug(f"Query too short: {query}")
+    #             return False
             
-            # Check if we've searched this query recently
-            recent_searches = cache.get(f"{settings.CACHE_KEY_PREFIX}:recent_searches", [])
-            if query in recent_searches[-10:]:  # Last 10 searches
-                logger.debug(f"Query recently searched: {query}")
-                return False
+    #         # Check if we've searched this query recently
+    #         recent_searches = cache.get(f"{settings.CACHE_KEY_PREFIX}:recent_searches", [])
+    #         if query in recent_searches[-10:]:  # Last 10 searches
+    #             logger.debug(f"Query recently searched: {query}")
+    #             return False
             
-            # Check if we have enough books in the database
-            book_count = Book.objects.count()
-            if book_count < 1000:  # Arbitrary threshold
-                logger.debug(f"Database has only {book_count} books, will fetch external")
-                return True
+    #         # Check if we have enough books in the database
+    #         book_count = Book.objects.count()
+    #         if book_count < 1000:  # Arbitrary threshold
+    #             logger.debug(f"Database has only {book_count} books, will fetch external")
+    #             return True
             
-            # Check if we've updated books recently
-            recent_updates = Book.objects.filter(
-                last_updated__gte=datetime.now() - timedelta(days=1)
-            ).count()
-            if recent_updates > 100:  # Arbitrary threshold
-                logger.debug(f"Recent updates count: {recent_updates}, skipping external fetch")
-                return False
+    #         # Check if we've updated books recently
+    #         recent_updates = Book.objects.filter(
+    #             last_updated__gte=datetime.now() - timedelta(days=1)
+    #         ).count()
+    #         if recent_updates > 100:  # Arbitrary threshold
+    #             logger.debug(f"Recent updates count: {recent_updates}, skipping external fetch")
+    #             return False
             
-            logger.debug(f"Will fetch external results for query: {query}")
-            return True
+    #         logger.debug(f"Will fetch external results for query: {query}")
+    #         return True
             
-        except Exception as e:
-            logger.error(f"Error checking if should fetch external: {e}", exc_info=True)
-            return False
+    #     except Exception as e:
+    #         logger.error(f"Error checking if should fetch external: {e}", exc_info=True)
+    #         return False
     
     @staticmethod
     def _search_local_database(query: str, page: int, page_size: int, 
@@ -150,12 +150,15 @@ class PostgreSQLSearchService:
             search_vector = (
                 SearchVector('title', weight='A') +  # Highest weight for title
                 SearchVector('description', weight='B') +  # Medium weight for description
-                SearchVector('authors__name', weight='A')  # High weight for author names
+                SearchVector('authors__name', weight='A') +  # High weight for author names
+                SearchVector('genres__name', weight='B') +  # Medium weight for genres
+                SearchVector('number_of_pages', weight='C')  # Lower weight for number of pages
             )
             
             # Create search query with ranking
             search_query = SearchQuery(query)
-            
+
+
             # Base queryset with search and ranking
             queryset = Book.objects.annotate(
                 search=search_vector,
@@ -165,9 +168,9 @@ class PostgreSQLSearchService:
             ).select_related().prefetch_related('authors', 'genres')
             
             # Apply additional filters
-            if filters:
-                logger.debug(f"Applying filters: {filters}")
-                queryset = PostgreSQLSearchService._apply_filters(queryset, filters)
+            # if not filters:
+            logger.debug(f"Applying filters: {filters}")
+            queryset = PostgreSQLSearchService._apply_filters(queryset, filters)
             
             # Order by relevance (rank) and then by title
             queryset = queryset.order_by('-rank', 'title')
@@ -293,35 +296,37 @@ class PostgreSQLSearchService:
         Apply filters to the queryset.
         """
         try:
-            # Filter by genres
-            if 'genres' in filters and filters['genres']:
+            if 'genres' in filters:
                 queryset = queryset.filter(genres__genre__in=filters['genres'])
                 logger.debug(f"Applied genre filter: {filters['genres']}")
             
             # Filter by minimum rating
-            if 'min_rating' in filters and filters['min_rating'] is not None:
+            if 'min_rating' in filters:
                 queryset = queryset.filter(average_rate__gte=filters['min_rating'])
                 logger.debug(f"Applied min rating filter: {filters['min_rating']}")
             
             # Filter by publication date range
-            if 'pub_date_from' in filters and filters['pub_date_from']:
+            if 'pub_date_from' in filters:
                 queryset = queryset.filter(publication_date__gte=filters['pub_date_from'])
                 logger.debug(f"Applied publication date from filter: {filters['pub_date_from']}")
-            if 'pub_date_to' in filters and filters['pub_date_to']:
+                
+                
+            if 'pub_date_to' in filters:
                 queryset = queryset.filter(publication_date__lte=filters['pub_date_to'])
                 logger.debug(f"Applied publication date to filter: {filters['pub_date_to']}")
             
-            # Filter by author
-            if 'author' in filters and filters['author']:
-                queryset = queryset.filter(authors__name__icontains=filters['author'])
+
+            if 'author' in filters:
+                queryset = queryset.filter(authors__name__in = filters['author'])
                 logger.debug(f"Applied author filter: {filters['author']}")
             
             # Filter by number of pages
-            if 'num_pages' in filters and filters['num_pages']:
+            if 'num_pages' in filters:
                 queryset = queryset.filter(number_of_pages__gte=filters['num_pages'])
                 logger.debug(f"Applied number of pages filter: {filters['num_pages']}")
             
-            return queryset.distinct()
+            
+            return queryset
             
         except Exception as e:
             logger.error(f"Error applying filters: {e}", exc_info=True)

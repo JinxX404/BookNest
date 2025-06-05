@@ -3,7 +3,7 @@ import logging
 import requests
 from django.db import transaction
 from django.utils import timezone
-from books.models import Book, Author, BookAuthor, BookGenre, Genre
+from books.models import Book, Author, BookAuthor, Genre
 from books.utils.external_api_clients import search_external_apis
 from datetime import datetime
 from dateutil import parser
@@ -12,40 +12,6 @@ from django.db.models.functions import Length
 
 # Configure logging
 logger = logging.getLogger(__name__)
-
-
-# def get_books_by_ids(book_ids: List[str]) -> List[Dict[str, Any]]:
-#     """Retrieve full book details from database using Elasticsearch IDs"""
-#     try:
-#         books = Book.objects.filter(isbn13__in=book_ids)
-#         return [{
-#             'id': str(book.id),
-#             'title': book.title,
-#             'authors': [author.name for author in book.authors.all()],
-#             'cover_img': book.cover_img,
-#             'description': book.description
-#         } for book in books]
-#     except Exception as e:
-#         logger.error(f"Error fetching books by IDs: {e}")
-#         return []
-
-
-# def search_books(query, page=1, page_size=10, filters=None):
-#     """
-#     Search for books using the new PostgreSQL-based search service.
-#     This function is kept for backward compatibility.
-    
-#     Args:
-#         query (str): Search query
-#         page (int): Page number (1-indexed)
-#         page_size (int): Number of results per page
-#         filters (dict): Optional filters for the search
-    
-#     Returns:
-#         tuple: (list of books, total count)
-#     """
-#     from books.utils.search_service import PostgreSQLSearchService
-#     return PostgreSQLSearchService.search_books(query, page, page_size, filters)
 
 
 def parse_date(date_value):
@@ -90,13 +56,13 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
         logger.warning("Cannot save book: missing required fields (isbn13 or title)")
         return None
     
-    # Check for network connectivity issues with cover image URL
-    if book_data.get('cover_img'):
-        from books.utils.external_api_clients import check_network_connectivity
-        if not check_network_connectivity():
-            # If network is down, set cover_img to None to avoid connection errors
-            logger.warning(f"Network connectivity issue detected. Setting cover_img to None for book {book_data['title']}")
-            book_data['cover_img'] = None
+    # # Check for network connectivity issues with cover image URL
+    # if book_data.get('cover_img'):
+    #     from books.utils.external_api_clients import check_network_connectivity
+    #     if not check_network_connectivity():
+    #         # If network is down, set cover_img to None to avoid connection errors
+    #         logger.warning(f"Network connectivity issue detected. Setting cover_img to None for book {book_data['title']}")
+    #         book_data['cover_img'] = None
         
     try:
         # Check if book already exists - use get_or_none pattern to avoid exceptions
@@ -104,6 +70,8 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
         if existing_book:
             logger.info(f"Book with ISBN13 {book_data['isbn13']} already exists")
             return existing_book  # Return existing book instead of None to allow further processing
+        
+        
         
         # Create book with cleaned data
         book = Book(
@@ -301,9 +269,9 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                                     primary_genre.save()
 
                         # Check if book already has this genre
-                        if not BookGenre.objects.filter(book=book, genre=primary_genre).exists():
+                        if not book.genres.filter(id=primary_genre.id).exists():  
                             try:
-                                BookGenre.objects.create(book=book, genre=primary_genre)
+                                book.genres.add(primary_genre)                                
                                 genres_added = True
                                 logger.debug(f"Added genre '{primary_genre.name}' to book {book.isbn13}")
                             except Exception as e:
@@ -327,15 +295,12 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                 }
             )
             try:
-                BookGenre.objects.create(book=book, genre=default_genre)
+                book.genres.add(default_genre)
                 logger.warning(f"No valid genres provided for book {book.isbn13}, using default genre")
             except Exception as e:
                 # Handle potential duplicate key error
                 if 'unique constraint' not in str(e).lower():
                     logger.error(f"Error adding default genre to book: {e}")
-
-        # Ensure book has at least one genre
-        BookGenre.ensure_book_has_genre(book)
         
         return book
     
