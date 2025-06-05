@@ -108,10 +108,10 @@ class BookSerializer(serializers.ModelSerializer):
 class ReadingListSerializer(serializers.ModelSerializer):
     book_count = serializers.SerializerMethodField()
     owner_username = serializers.SerializerMethodField()
-    
+    books=BookSerializer(many=True, read_only=True)
     class Meta:
         model = ReadingList
-        fields = ["list_id", "name", "type", "privacy", "created_at", "book_count", "owner_username"]
+        fields = ["list_id", "name", "type", "privacy", "created_at", "book_count", "owner_username", "books"]
         read_only_fields = ["list_id", "created_at", "book_count", "owner_username"]
     
     def get_book_count(self, obj):
@@ -121,8 +121,8 @@ class ReadingListSerializer(serializers.ModelSerializer):
         return obj.profile.user.username if obj.profile and obj.profile.user else None
 
 
-class ReadingListDetailSerializer(ReadingListSerializer):
-    books = BookSerializer(many=True, read_only=True)
+# class ReadingListDetailSerializer(ReadingListSerializer):
+#     # books = BookSerializer(many=True, read_only=True)
 
-    class Meta(ReadingListSerializer.Meta):
-        fields = ReadingListSerializer.Meta.fields + ["books"]
+#     # class Meta(ReadingListSerializer.Meta):
+#     #     fields = ReadingListSerializer.Meta.fields + ["books"]

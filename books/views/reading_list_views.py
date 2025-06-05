@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 from books.models import ReadingList, Book
-from books.serializers.book_serializers import ReadingListSerializer, ReadingListDetailSerializer
+from books.serializers.book_serializers import ReadingListSerializer
 
 
 class ReadingListAPIView(generics.ListAPIView):
@@ -20,7 +20,7 @@ class ReadingListAPIView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             return ReadingList.objects.filter(
-                Q(privacy='public') | Q(profile__user=self.request.user)
+                Q(profile__user=self.request.user)
             ).order_by('-created_at')
         return ReadingList.objects.filter(privacy='public').order_by('-created_at')
 
@@ -31,7 +31,8 @@ class ReadingListDetailAPIView(generics.RetrieveAPIView):
     API endpoint that allows a specific reading list to be viewed.
     Returns public lists and user's own lists if authenticated.
     """
-    serializer_class = ReadingListDetailSerializer
+    # serializer_class = ReadingListDetailSerializer
+    serializer_class = ReadingListSerializer
     lookup_field = 'list_id'
     
     def get_queryset(self):
