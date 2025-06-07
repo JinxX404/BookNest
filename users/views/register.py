@@ -35,11 +35,9 @@ class CustomRegisterView(RegisterView):
                         "id": user.id,
                         "username": user.username,
                         "email": user.email,
-                        "tokens": {
-                            "access": access_token,
-                            "refresh": refresh_token
-                    }
-                    }
+                    },
+                    "access": access_token,
+                    "refresh": refresh_token
                 },
                 "meta": {
                     "next_action": "create_profile",
@@ -102,10 +100,9 @@ class CustomLoginView(LoginView):
                             "email": user.email,
                             "has_profile": has_profile
                         },
-                        "tokens": {
-                                   'access': access_token,
-                                   'refresh': refresh_token
-                                }  # Contains access and refresh tokens
+                    'access': access_token,
+                    'refresh': refresh_token
+                       
                     },
                     "meta": {
                         "profile_required": not has_profile,

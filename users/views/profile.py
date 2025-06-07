@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import transaction
 from users.models.profile import Profile
-from users.serializers.profile import ProfileSerializer
+from users.serializers.profile import ProfileSerializer, ProfileUpdateSerializer
 from users.permissions import IsOwnerOrReadOnly, IsAuthenticated
 import cloudinary.uploader
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -22,6 +22,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     
+    def get_serializer_class(self):
+        """Return appropriate serializer class based on action"""
+        if self.action in ['update', 'partial_update']:
+            return ProfileUpdateSerializer
+        return ProfileSerializer
+
     def create(self, request, *args, **kwargs):
         """Create a new profile for the authenticated user"""
         try:

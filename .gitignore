@@ -186,12 +186,10 @@ staticfiles/
 static/
 
 # Environment variables and secrets
-.env
 .env.local
 .env.production
 .env.staging
 .env.development
-*.env
 
 # Database dumps
 *.sql
@@ -242,8 +240,6 @@ Thumbs.db
 *.backup
 *.old
 
-# CSV data files (if they contain sensitive data)
-user_ratings.csv
 
 # Shell scripts that might contain secrets
 restore_data.sh
@@ -251,5 +247,5 @@ restore_data.sh
 # Any file containing 'secret' or 'key' in the name
 *secret*
 *key*
-*password*
 *credential*
+

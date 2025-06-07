@@ -27,32 +27,32 @@ class PostgreSQLSearchService:
     Provides search functionality with filtering, pagination, and external API fallback.
     """
     
-    @staticmethod
-    def _generate_cache_key(query: str, page: int, page_size: int, filters: Optional[Dict[str, Any]] = None) -> str:
-        """Generate a unique cache key for the search query."""
-        key_parts = [query, str(page), str(page_size)]
-        if filters:
-            key_parts.append(json.dumps(filters, sort_keys=True))
-        key_string = ':'.join(key_parts)
-        return f"{settings.CACHE_KEY_PREFIX}:search:{hashlib.md5(key_string.encode()).hexdigest()}"
+    # @staticmethod
+    # def _generate_cache_key(query: str, page: int, page_size: int, filters: Optional[Dict[str, Any]] = None) -> str:
+    #     """Generate a unique cache key for the search query."""
+    #     key_parts = [query, str(page), str(page_size)]
+    #     if filters:
+    #         key_parts.append(json.dumps(filters, sort_keys=True))
+    #     key_string = ':'.join(key_parts)
+    #     return f"{settings.CACHE_KEY_PREFIX}:search:{hashlib.md5(key_string.encode()).hexdigest()}"
     
-    @staticmethod
-    def _update_recent_searches(query: str):
-        """Update the list of recent searches in cache."""
-        try:
-            recent_searches = cache.get(f"{settings.CACHE_KEY_PREFIX}:recent_searches", [])
-            recent_searches.append(query)
-            # Keep only last 1000 searches
-            if len(recent_searches) > 1000:
-                recent_searches = recent_searches[-1000:]
-            cache.set(
-                f"{settings.CACHE_KEY_PREFIX}:recent_searches",
-                recent_searches,
-                timeout=60 * 60 * 24  # 24 hours
-            )
-            logger.debug(f"Updated recent searches with query: {query}")
-        except Exception as e:
-            logger.error(f"Error updating recent searches: {e}", exc_info=True)
+    # @staticmethod
+    # def _update_recent_searches(query: str):
+    #     """Update the list of recent searches in cache."""
+    #     try:
+    #         recent_searches = cache.get(f"{settings.CACHE_KEY_PREFIX}:recent_searches", [])
+    #         recent_searches.append(query)
+    #         # Keep only last 1000 searches
+    #         if len(recent_searches) > 1000:
+    #             recent_searches = recent_searches[-1000:]
+    #         cache.set(
+    #             f"{settings.CACHE_KEY_PREFIX}:recent_searches",
+    #             recent_searches,
+    #             timeout=60 * 60 * 24  # 24 hours
+    #         )
+    #         logger.debug(f"Updated recent searches with query: {query}")
+    #     except Exception as e:
+    #         logger.error(f"Error updating recent searches: {e}", exc_info=True)
     
     @staticmethod
     def search_books(query: str, page: int = 1, page_size: int = 10, 
@@ -63,19 +63,19 @@ class PostgreSQLSearchService:
         """
         logger.info(f"Starting book search for query: {query}, page: {page}, page_size: {page_size}")
         
-        if not query.strip():
-            logger.info("Empty query, returning all books")
-            return PostgreSQLSearchService._get_all_books(page, page_size, filters)
+        # if not query.strip():
+        #     logger.info("Empty query, returning all books")
+        #     return PostgreSQLSearchService._get_all_books(page, page_size, filters)
         
-        # Update recent searches
-        PostgreSQLSearchService._update_recent_searches(query)
+        # # Update recent searches
+        # PostgreSQLSearchService._update_recent_searches(query)
         
-        # Try to get from cache first
-        cache_key = PostgreSQLSearchService._generate_cache_key(query, page, page_size, filters)
-        cached_result = cache.get(cache_key)
-        if cached_result:
-            logger.info(f"Cache hit for query: {query}")
-            return cached_result
+        # # Try to get from cache first
+        # cache_key = PostgreSQLSearchService._generate_cache_key(query, page, page_size, filters)
+        # cached_result = cache.get(cache_key)
+        # if cached_result:
+        #     logger.info(f"Cache hit for query: {query}")
+        #     return cached_result
         
         # First try local database search
         books, total_count = PostgreSQLSearchService._search_local_database(query, page, page_size, filters)
@@ -83,7 +83,7 @@ class PostgreSQLSearchService:
         if books:
             logger.info(f"Found {len(books)} books in local database for query: {query}")
             # Cache the results
-            cache.set(cache_key, (books, total_count), settings.CACHE_TTL)
+            # cache.set(cache_key, (books, total_count), settings.CACHE_TTL)
             return books, total_count
         
         logger.info(f"No local results for query: {query}, searching external APIs")

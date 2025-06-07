@@ -39,13 +39,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     social_links = ProfileSocialLinkSerializer(many=True, required=False)
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
     profile_pic = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = Profile
         fields = [
-            'id', 'username', 'email', 'full_name', 'profile_pic', 'bio', 
+            'id', 'user_id', 'username', 'email', 'full_name', 'profile_pic', 'bio', 
             'profile_type', 'interests', 'social_links', 
             'created_at', 'updated_at'
         ]
@@ -75,11 +77,11 @@ class ProfileSerializer(serializers.ModelSerializer):
             return f"{user.first_name} {user.last_name}".strip()
         return None
 
-    def validate_bio(self, value):
-        """Validate bio field"""
-        if value and len(value.strip()) < 10:
-            raise serializers.ValidationError("Bio must be at least 10 characters long")
-        return value.strip() if value else value
+    # def validate_bio(self, value):
+    #     """Validate bio field"""
+    #     if value and len(value.strip()) < 10:
+    #         raise serializers.ValidationError("Bio must be at least 10 characters long")
+    #     return value.strip() if value else value
 
     def validate_interests(self, value):
         """Validate interests list"""
