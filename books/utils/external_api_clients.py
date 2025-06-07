@@ -27,31 +27,43 @@ def check_network_connectivity(test_url="https://www.google.com", timeout=3):
     except requests.RequestException:
         return False
 
-# Configure requests with retry functionality
-def get_requests_session(retries=3, backoff_factor=0.5, status_forcelist=(500, 502, 503, 504)):
-    """Create a requests session with retry functionality
-    
-    Args:
-        retries: Number of retries to attempt
-        backoff_factor: Backoff factor between retries
-        status_forcelist: HTTP status codes to retry on
-        
-    Returns:
-        Configured requests session
-    """
+def get_requests_session():
+    """Create a requests session with retry logic."""
     session = requests.Session()
     retry = Retry(
-        total=retries,
-        read=retries,
-        connect=retries,
-        backoff_factor=backoff_factor,
-        status_forcelist=status_forcelist,
+        total=3,
+        backoff_factor=0.5,
+        status_forcelist=(500, 502, 503, 504)
     )
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     return session
 
+def clean_isbn(isbn: Optional[str]) -> Optional[str]:
+    """Clean and validate ISBN to ensure it's in the correct format.
+    
+    Args:
+        isbn: ISBN string to clean
+        
+    Returns:
+        Cleaned ISBN string or None if invalid
+    """
+    if not isbn:
+        return None
+        
+    # Remove any non-alphanumeric characters
+    isbn = ''.join(c for c in isbn if c.isalnum())
+    
+    # If it's an ISBN-13, ensure it's exactly 13 digits
+    if len(isbn) == 13 and isbn.isdigit():
+        return isbn
+        
+    # If it's an ISBN-10, ensure it's exactly 10 characters (digits or X)
+    if len(isbn) == 10 and (isbn[:-1].isdigit() and (isbn[-1].isdigit() or isbn[-1].upper() == 'X')):
+        return isbn
+        
+    return None
 
 class OpenLibraryClient:
     """Client for interacting with the OpenLibrary API"""
@@ -59,225 +71,124 @@ class OpenLibraryClient:
     SEARCH_URL = "https://openlibrary.org/search.json"
     AUTHOR_URL = "https://openlibrary.org/authors/"
     
-    @classmethod
-    def get_author_details(cls, author_key: str) -> Dict[str, Any]:
-        """Fetch detailed author information from OpenLibrary
-        
-        Args:
-            author_key: OpenLibrary author key (e.g., OL1234A)
-            
-        Returns:
-            Dictionary with author details
-        """
-        if not author_key or not author_key.startswith('OL'):
-            return {}
-            
-        try:
-            # Use session with retry logic and timeout
-            session = get_requests_session()
-            response = session.get(f"{cls.AUTHOR_URL}{author_key}.json", timeout=(5, 10))
-            response.raise_for_status()
-            data = response.json()
-            
-            # Extract relevant author information
-            author_info = {
-                "name": data.get("name", ""),
-                "bio": data.get("bio", ""),
-                "birth_date": data.get("birth_date"),
-                "number_of_books": len(data.get("works", [])) if "works" in data else None
-            }
-            
-            return author_info
-            
-        except requests.RequestException as e:
-            logger.error(f"Error fetching author details from OpenLibrary: {e}")
-            return {}
+    # Fields we want to retrieve from OpenLibrary
+    FIELDS = [
+        "key", "title", "author_name", "isbn", "cover_i",
+        "first_publish_year", "number_of_pages_median", "description",
+        "subject", "language", "ratings_average"
+    ]
     
     @classmethod
-    def search_books(cls, query: str) -> List[Dict[str, Any]]:
-        """Search for books in OpenLibrary API
+    def search_books(cls, query: str, page_size: int = 15) -> List[Dict[str, Any]]:
+        """Search for books using OpenLibrary API
         
         Args:
             query: Search query string
+            page_size: Number of results to return (default: 15)
             
         Returns:
-            List of book dictionaries with standardized format
+            List of book dictionaries
         """
-        params = {
-            "q": query,
-            "fields": "key,title,author_name,author_key,isbn,cover_i,first_publish_year,number_of_pages_median,description,subject",
-            "limit": 10
-        }
-        
+        if not query or len(query.strip()) < 2:
+            logger.warning("Query too short for OpenLibrary search")
+            return []
+            
         try:
             # Use session with retry logic and timeout
             session = get_requests_session()
-            response = session.get(cls.SEARCH_URL, params=params, timeout=(5, 10))
+            response = session.get(
+                cls.SEARCH_URL,
+                params={
+                    "q": query,
+                    "limit": page_size,
+                    "fields": ",".join(cls.FIELDS)
+                },
+                timeout=(5, 10)
+            )
             response.raise_for_status()
             data = response.json()
             
             books = []
             for doc in data.get("docs", []):
-                # Extract ISBNs
-                isbns = doc.get("isbn", [])
-                isbn13 = next((isbn for isbn in isbns if len(isbn) == 13), None)
-                isbn10 = next((isbn for isbn in isbns if len(isbn) == 10), None)
+                # Get basic author information
+                author_names = doc.get("author_name", [])
+                authors = [{"name": name} for name in author_names]
                 
-                # Get cover image URL if available
+                # Get cover image
                 cover_img = None
                 if doc.get("cover_i"):
                     cover_img = f"https://covers.openlibrary.org/b/id/{doc['cover_i']}-L.jpg"
                 
-                # Process authors with detailed information
-                authors = []
-                author_names = doc.get("author_name", [])
-                author_keys = doc.get("author_key", [])
+                # Clean ISBNs
+                isbn = clean_isbn(doc.get("isbn", [None])[0])
                 
-                # Match author names with their keys
-                for i, author_name in enumerate(author_names):
-                    author_info = {
-                        "name": author_name,
-                        "bio": "",
-                        "birth_date": None,
-                        "number_of_books": None
-                    }
-                    
-                    # If we have an author key, try to get more details
-                    if i < len(author_keys):
-                        author_key = author_keys[i]
-                        detailed_info = cls.get_author_details(author_key)
-                        if detailed_info:
-                            # Update with detailed info but keep name if detailed info has none
-                            if not detailed_info.get("name"):
-                                detailed_info["name"] = author_name
-                            author_info.update(detailed_info)
-                    
-                    authors.append(author_info)
+                # Get all languages as comma-separated string
+                languages = doc.get("language", [])
+                language_str = ", ".join(lang for lang in languages if lang) if languages else None
                 
                 # Format book data
                 book = {
-                    "isbn13": isbn13,
-                    "isbn": isbn10,
+                    "isbn13": isbn if isbn and len(isbn) == 13 else None,
+                    "isbn": isbn if isbn and len(isbn) == 10 else None,
                     "title": doc.get("title", ""),
                     "authors": authors,
                     "cover_img": cover_img,
                     "publication_date": doc.get("first_publish_year"),
                     "number_of_pages": doc.get("number_of_pages_median"),
                     "description": doc.get("description", ""),
-                    "genres": doc.get("subject", [])[:10] if doc.get("subject") else [],
-                    "source": "openlibrary"
+                    "genres": doc.get("subject", [])[:5],
+                    "source": "openlibrary",
+                    "language": language_str,
+                    "average_rating": doc.get("ratings_average"),
                 }
-                
-                # Only add books with ISBN13 (required for our database)
-                if book["isbn13"]:
-                    books.append(book)
+            if book["isbn13"]:
+                books.append(book)
             
             return books
-        
+            
         except requests.RequestException as e:
             logger.error(f"Error searching OpenLibrary: {e}")
-            # More detailed error logging
-            if isinstance(e, requests.ConnectionError):
-                logger.error("Connection error - check network connectivity")
-            elif isinstance(e, requests.Timeout):
-                logger.error("Request timed out - API may be slow or unresponsive")
             return []
-
 
 class GoogleBooksClient:
     """Client for interacting with the Google Books API"""
     BASE_URL = "https://www.googleapis.com/books/v1/volumes"
+    MAX_RESULTS = 40  # Google Books API limit
+    
+    # Fields we want to retrieve from Google Books
+    FIELDS = (
+        "items(volumeInfo(title,authors,description,industryIdentifiers,"
+        "pageCount,publishedDate,imageLinks/thumbnail,categories,language,"
+        "averageRating))"
+    )
     
     @classmethod
-    def get_author_details(cls, author_name: str) -> Dict[str, Any]:
-        """Fetch detailed author information from Google Books
-        
-        Args:
-            author_name: Author name to search for
-            
-        Returns:
-            Dictionary with author details
-        """
-        if not author_name:
-            return {}
-            
-        try:
-            # Search for books by this author to gather information
-            params = {
-                "q": f"inauthor:{author_name}",
-                "maxResults": 5  # Limit to reduce API load
-            }
-            
-            session = get_requests_session()
-            response = session.get(cls.BASE_URL, params=params, timeout=(5, 10))
-            response.raise_for_status()
-            data = response.json()
-            
-            # Initialize author info with defaults
-            author_info = {
-                "name": author_name,
-                "bio": "",
-                "birth_date": None,
-                "number_of_books": None
-            }
-            
-            # Try to extract bio from author information in book descriptions
-            items = data.get("items", [])
-            if items:
-                # Count total books by this author
-                total_items = data.get("totalItems", 0)
-                if total_items > 0:
-                    author_info["number_of_books"] = total_items
-                
-                # Look for author bio in book descriptions
-                for item in items:
-                    volume_info = item.get("volumeInfo", {})
-                    description = volume_info.get("description", "")
-                    
-                    # Simple heuristic to find author bio in description
-                    if author_name in description and ("about the author" in description.lower() or 
-                                                     "author bio" in description.lower()):
-                        # Extract a reasonable bio length
-                        start_idx = description.lower().find("about the author")
-                        if start_idx == -1:
-                            start_idx = description.lower().find("author bio")
-                        
-                        if start_idx != -1:
-                            # Extract up to 500 chars after the bio marker
-                            bio_text = description[start_idx:start_idx + 500]
-                            # Truncate at the end of a sentence if possible
-                            period_idx = bio_text.find(".")
-                            if period_idx != -1:
-                                bio_text = bio_text[:period_idx + 1]
-                            
-                            author_info["bio"] = bio_text.strip()
-                            break
-            
-            return author_info
-            
-        except requests.RequestException as e:
-            logger.error(f"Error fetching author details from Google Books: {e}")
-            return {}
-    
-    @classmethod
-    def search_books(cls, query: str) -> List[Dict[str, Any]]:
-        """Search for books in Google Books API
+    def search_books(cls, query: str, page_size: int = 15) -> List[Dict[str, Any]]:
+        """Search for books using Google Books API
         
         Args:
             query: Search query string
+            page_size: Number of results to return (default: 15)
             
         Returns:
-            List of book dictionaries with standardized format
+            List of book dictionaries
         """
-        params = {
-            "q": query,
-            "maxResults": 10
-        }
-        
+        if not query or len(query.strip()) < 2:
+            logger.warning("Query too short for Google Books search")
+            return []
+            
         try:
             # Use session with retry logic and timeout
             session = get_requests_session()
-            response = session.get(cls.BASE_URL, params=params, timeout=(5, 10))
+            response = session.get(
+                cls.BASE_URL,
+                params={
+                    "q": query,
+                    "maxResults": min(page_size, cls.MAX_RESULTS),
+                    "fields": cls.FIELDS
+                },
+                timeout=(5, 10)
+            )
             response.raise_for_status()
             data = response.json()
             
@@ -285,29 +196,27 @@ class GoogleBooksClient:
             for item in data.get("items", []):
                 volume_info = item.get("volumeInfo", {})
                 
-                # Extract ISBNs
+                # Extract and clean ISBNs
                 industry_identifiers = volume_info.get("industryIdentifiers", [])
-                isbn13 = next((id_info.get("identifier") for id_info in industry_identifiers 
-                              if id_info.get("type") == "ISBN_13"), None)
-                isbn10 = next((id_info.get("identifier") for id_info in industry_identifiers 
-                              if id_info.get("type") == "ISBN_10"), None)
+                isbn13 = clean_isbn(next((id_info.get("identifier") for id_info in industry_identifiers 
+                              if id_info.get("type") == "ISBN_13"), None))
+                isbn10 = clean_isbn(next((id_info.get("identifier") for id_info in industry_identifiers 
+                              if id_info.get("type") == "ISBN_10"), None))
                 
-                # Get author names
+                # Get basic author information
                 author_names = volume_info.get("authors", [])
-                
-                # Process authors with detailed information
-                authors = []
-                for author_name in author_names:
-                    # Get detailed author information
-                    author_info = cls.get_author_details(author_name)
-                    authors.append(author_info)
+                authors = [{"name": name} for name in author_names]
                 
                 # Get cover image
                 cover_img = None
                 if volume_info.get("imageLinks", {}).get("thumbnail"):
                     cover_img = volume_info["imageLinks"]["thumbnail"]
                 
-                # Format book data
+                # Get language as comma-separated string
+                language = volume_info.get("language")
+                language_str = language if language else None
+                
+                # Format book data with available fields
                 book = {
                     "isbn13": isbn13,
                     "isbn": isbn10,
@@ -318,24 +227,138 @@ class GoogleBooksClient:
                     "number_of_pages": volume_info.get("pageCount"),
                     "description": volume_info.get("description", ""),
                     "genres": volume_info.get("categories", [])[:5] if volume_info.get("categories") else [],
-                    "source": "googlebooks"
+                    "source": "googlebooks",
+                    "language": language_str,
+                    "average_rating": volume_info.get("averageRating")
                 }
-                
-                # Only add books with ISBN13 (required for our database)
-                if book["isbn13"]:
-                    books.append(book)
+            if book["isbn13"]:
+                books.append(book)
             
             return books
-        
+            
         except requests.RequestException as e:
             logger.error(f"Error searching Google Books: {e}")
-            # More detailed error logging
-            if isinstance(e, requests.ConnectionError):
-                logger.error("Connection error - check network connectivity")
-            elif isinstance(e, requests.Timeout):
-                logger.error("Request timed out - API may be slow or unresponsive")
             return []
 
+def evaluate_book_completeness(book: Dict[str, Any]) -> float:
+    """
+    Evaluate how complete a book's information is.
+    Returns a score between 0 and 1, where 1 means all important fields are present.
+    
+    Args:
+        book: Book dictionary from either API
+        
+    Returns:
+        Completeness score (0-1)
+    """
+    # Define required and optional fields with their weights
+    required_fields = {
+        'title': 0.2,
+        'authors': 0.2,
+        'isbn13': 0.15,
+        'description': 0.15,
+        'cover_img': 0.1,
+        'publication_date': 0.1,
+        'genres': 0.1
+    }
+    
+    optional_fields = {
+        'number_of_pages': 0.05,
+        'language': 0.05,
+        'publisher': 0.05,
+        'average_rating': 0.05,
+        'ratings_count': 0.05
+    }
+    
+    score = 0.0
+    
+    # Check required fields
+    for field, weight in required_fields.items():
+        if field in book and book[field]:
+            if field == 'authors' and len(book[field]) > 0:
+                score += weight
+            elif field == 'genres' and len(book[field]) > 0:
+                score += weight
+            elif field != 'authors' and field != 'genres':
+                score += weight
+    
+    # Check optional fields
+    for field, weight in optional_fields.items():
+        if field in book and book[field]:
+            score += weight
+    
+    return score
+
+def merge_book_results(openlibrary_books: List[Dict[str, Any]], 
+                      googlebooks_books: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Merge and deduplicate book results from both APIs, keeping the most complete information.
+    
+    Args:
+        openlibrary_books: List of books from OpenLibrary
+        googlebooks_books: List of books from GoogleBooks
+        
+    Returns:
+        List of merged books with the most complete information
+    """
+    # Create a dictionary to store the best version of each book
+    best_books = {}
+    
+    # Process OpenLibrary books
+    for book in openlibrary_books:
+        isbn13 = book.get('isbn13')
+        if not isbn13:
+            continue
+            
+        score = evaluate_book_completeness(book)
+        if isbn13 not in best_books or score > best_books[isbn13]['score']:
+            best_books[isbn13] = {
+                'book': book,
+                'score': score,
+                'source': 'openlibrary'
+            }
+    
+    # Process GoogleBooks books
+    for book in googlebooks_books:
+        isbn13 = book.get('isbn13')
+        if not isbn13:
+            continue
+            
+        score = evaluate_book_completeness(book)
+        if isbn13 not in best_books or score > best_books[isbn13]['score']:
+            best_books[isbn13] = {
+                'book': book,
+                'score': best_books[isbn13]['score'] if isbn13 in best_books else 0,
+                'source': 'googlebooks'
+            }
+    
+    # Merge information from both sources when available
+    for isbn13, book_info in best_books.items():
+        book = book_info['book']
+        other_source = 'googlebooks' if book_info['source'] == 'openlibrary' else 'openlibrary'
+        
+        # Find the same book in the other source
+        other_books = googlebooks_books if other_source == 'googlebooks' else openlibrary_books
+        other_book = next((b for b in other_books if b.get('isbn13') == isbn13), None)
+        
+        if other_book:
+            # Merge missing information
+            for key, value in other_book.items():
+                if key not in book or not book[key]:
+                    book[key] = value
+                elif key == 'authors' and len(book[key]) < len(value):
+                    # Merge unique authors
+                    existing_names = {a.get('name') for a in book[key]}
+                    book[key].extend([a for a in value if a.get('name') not in existing_names])
+                elif key == 'genres' and len(book[key]) < len(value):
+                    # Merge unique genres
+                    existing_genres = set(book[key])
+                    book[key].extend([g for g in value if g not in existing_genres])
+    
+    # Return the merged books, sorted by completeness score
+    return [info['book'] for info in sorted(best_books.values(), 
+                                          key=lambda x: x['score'], 
+                                          reverse=True)]
 
 def search_external_apis(query: str, max_retries=2, timeout=10) -> List[Dict[str, Any]]:
     """Search for books across all external APIs with retry mechanism
@@ -354,9 +377,10 @@ def search_external_apis(query: str, max_retries=2, timeout=10) -> List[Dict[str
         return []
         
     retry_count = 0
-    combined_results = []
+    openlibrary_results = []
+    googlebooks_results = []
     
-    while retry_count <= max_retries and not combined_results:
+    while retry_count <= max_retries and not (openlibrary_results or googlebooks_results):
         if retry_count > 0:
             logger.info(f"Retry attempt {retry_count} for external API search")
             # Add exponential backoff between retries
@@ -394,51 +418,18 @@ def search_external_apis(query: str, max_retries=2, timeout=10) -> List[Dict[str
             logger.error("Connection error while searching external APIs")
             return []
         
-        # Combine results, removing duplicates based on ISBN13
-        seen_isbns = set()
-        
-        for book in openlibrary_results + googlebooks_results:
-            if book["isbn13"] and book["isbn13"] not in seen_isbns:
-                seen_isbns.add(book["isbn13"])
-                
-                # Ensure authors are in the correct format (list of dictionaries)
-                if "authors" in book:
-                    # Convert any string authors to dictionary format
-                    formatted_authors = []
-                    for author in book["authors"]:
-                        if isinstance(author, str):
-                            formatted_authors.append({
-                                "name": author,
-                                "bio": "",
-                                "birth_date": None,
-                                "number_of_books": None
-                            })
-                        else:
-                            # Ensure all required fields exist in author dictionary
-                            if not isinstance(author, dict):
-                                continue
-                                
-                            author_dict = {
-                                "name": author.get("name", ""),
-                                "bio": author.get("bio", ""),
-                                "birth_date": author.get("birth_date"),
-                                "number_of_books": author.get("number_of_books")
-                            }
-                            formatted_authors.append(author_dict)
-                    
-                    book["authors"] = formatted_authors
-                
-                combined_results.append(book)
-        
         retry_count += 1
         
-        # If we got results, no need to retry
-        if combined_results:
+        # If we got results from either API, no need to retry
+        if openlibrary_results or googlebooks_results:
             break
     
-    if not combined_results and retry_count > max_retries:
+    if not (openlibrary_results or googlebooks_results) and retry_count > max_retries:
         logger.warning(f"Failed to get results from external APIs after {max_retries} retries")
-    else:
-        logger.info(f"Successfully retrieved {len(combined_results)} books with complete author information")
-        
-    return combined_results
+        return []
+    
+    # Merge and deduplicate results
+    merged_results = merge_book_results(openlibrary_results, googlebooks_results)
+    logger.info(f"Successfully merged {len(merged_results)} books from external APIs")
+    
+    return merged_results

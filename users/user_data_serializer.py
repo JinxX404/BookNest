@@ -12,7 +12,7 @@ from books.models import (
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['author_id', 'name', 'bio', 'date_of_birth']
+        fields = ['author_id', 'name', 'number_of_books']
 
 
 class BookGenreSerializer(serializers.ModelSerializer):

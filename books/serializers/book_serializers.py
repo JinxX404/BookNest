@@ -11,7 +11,7 @@ class BookGenreSerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ["author_id", "name", "bio" , "date_of_birth" , "number_of_books"]
+        fields = ["author_id", "name", "number_of_books"]
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -35,23 +35,19 @@ class BookSerializer(serializers.ModelSerializer):
             "cover_img",
             "number_of_ratings",
             "reviews_count",
+            "language",
+            "source",
+            
         ]
         
     def get_reviews_count(self, obj):
         return obj.reviews.count()
 
-
-    
     def to_representation(self, instance):
-
         rep = super().to_representation(instance)
         # Replace genre names from the M2M field directly
         rep["genres"] = list(instance.genres.values_list("name", flat=True))
         return rep
-
-    # def get_genres(self, obj):
-    #     genres = BookGenre.objects.filter(book=obj).values_list("genre", flat=True)
-    #     return list(genres)
 
     def create(self, validated_data):
         authors_data = validated_data.pop("authors") # pop authors data from validated data to use it in creating book authors through BookAuthor model

@@ -93,8 +93,6 @@ class AuthorListAPIView(generics.ListAPIView):
     filterset_fields = {
         'name': ['icontains'],
         'number_of_books': ['gte', 'lte'],
-        'bio': ['icontains'],
-        'date_of_birth': ['exact', 'year', 'month', 'day', 'range'],
     }
     pagination_class = LimitOffsetPagination
 

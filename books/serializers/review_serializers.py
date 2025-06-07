@@ -12,17 +12,20 @@ class BookReviewSerializer(serializers.ModelSerializer):
     has_downvoted = serializers.SerializerMethodField()
     user_vote_type = serializers.SerializerMethodField()
     net_votes = serializers.SerializerMethodField()
+    profile_pic = serializers.SerializerMethodField()
     
     class Meta:
         model = BookReview
         fields = [
             'review_id', 'review_text', 'created_at', 'updated_at', 
             'upvotes_count', 'downvotes_count', 'net_votes', 'user', 'book', 
-            'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type'
+            'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
+            'profile_pic'
         ]
         read_only_fields = [
             'review_id', 'created_at', 'updated_at', 'upvotes_count', 'downvotes_count',
-            'net_votes', 'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type'
+            'net_votes', 'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
+            'profile_pic'
         ]
     
     def get_book_title(self, obj):
@@ -30,6 +33,12 @@ class BookReviewSerializer(serializers.ModelSerializer):
     
     def get_username(self, obj):
         return obj.user.username
+    
+    def get_profile_pic(self, obj):
+        """Get the user's profile picture URL"""
+        if hasattr(obj.user, 'profile') and obj.user.profile.profile_pic:
+            return str(obj.user.profile.profile_pic)
+        return None
     
     def get_net_votes(self, obj):
         """Calculate net votes (upvotes - downvotes)"""

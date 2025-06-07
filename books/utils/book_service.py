@@ -81,11 +81,10 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
             cover_img=book_data.get('cover_img'),
             description=book_data.get('description', '').strip(),  # Clean description
             number_of_pages=book_data.get('number_of_pages'),
-            average_rate=None,  # No ratings yet
+            average_rate=book_data.get('average_rating'),  # Use average_rating from API
             publication_date=parse_date(book_data.get('publication_date')),
-            external_id=book_data.get('id'),
-            external_source=book_data.get('source', 'external'),
-            source='external'
+            source=book_data.get('source', 'openlibrary'),  # Use the source from the API
+            language=book_data.get('language')  # Add language field
         )
         
         book.save()
@@ -99,9 +98,7 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                 try:
                     # Initialize variables
                     author_name = None
-                    author_bio = None
-                    author_birth_date = None
-                    author_data_quality = 'minimal'
+                
                     existing_author = None
                     
                     # Handle both string author names and author dictionaries
@@ -114,14 +111,9 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                         author_name = author_data.get('name', '').strip()
                         if not author_name:
                             continue
-                        author_bio = author_data.get('bio', '')
-                        author_birth_date = parse_date(author_data.get('birth_date'))
                         
-                        # Determine data quality
-                        if author_bio and author_birth_date:
-                            author_data_quality = 'complete'
-                        elif author_bio or author_birth_date:
-                            author_data_quality = 'partial'
+                        
+                        
                     
                     # Normalize author name (Title Case)
                     author_name = ' '.join(word.capitalize() for word in author_name.split())
@@ -144,46 +136,13 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                             # Use the most similar author (longest name match)
                             existing_author = similar_authors.first()
                             logger.info(f"Found similar author: '{existing_author.name}' for '{author_name}'")
-                    
-                    if existing_author:
-                        # Update author data if current data is better quality
-                        update_fields = []
+                
                         
-                        # Only update fields if they're empty in the database but we have data
-                        if (existing_author.bio is None or existing_author.bio == '') and author_bio:
-                            existing_author.bio = author_bio
-                            update_fields.append('bio')
-                            
-                            # Update data quality if needed
-                            if existing_author.data_quality == 'minimal':
-                                existing_author.data_quality = 'partial' if not existing_author.date_of_birth else 'complete'
-                                update_fields.append('data_quality')
-                            
-                        if existing_author.date_of_birth is None and author_birth_date:
-                            existing_author.date_of_birth = author_birth_date
-                            update_fields.append('date_of_birth')
-                            
-                            # Update data quality if needed
-                            if existing_author.data_quality == 'minimal':
-                                existing_author.data_quality = 'partial' if not existing_author.bio else 'complete'
-                                update_fields.append('data_quality')
-                            
-                        if update_fields:
-                            existing_author.last_updated = timezone.now()
-                            update_fields.append('last_updated')
-                            existing_author.save(update_fields=update_fields)
-                            
-                        author = existing_author
-                    else:
-                        # Create new author with normalized data
-                        author = Author.objects.create(
+                    # Create new author with normalized data
+                    author = Author.objects.create(
                             name=author_name,
-                            bio=author_bio or '',
-                            date_of_birth=author_birth_date,
                             number_of_books=0,  # Will be updated below
-                            data_quality=author_data_quality,
-                            last_updated=timezone.now()
-                        )
+                    )
                     
                     # Check if book-author relationship already exists
                     if not BookAuthor.objects.filter(book=book, author=author).exists():
@@ -211,10 +170,7 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
                     # If no default author exists, create one
                     default_author = Author.objects.create(
                         name="Unknown Author",
-                        bio="No biography available",
                         number_of_books=0,  # Will be updated below
-                        data_quality='minimal',
-                        last_updated=timezone.now()
                     )
                 
                 if not BookAuthor.objects.filter(book=book, author=default_author).exists():

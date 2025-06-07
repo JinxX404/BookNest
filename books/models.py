@@ -14,20 +14,19 @@ class Author(models.Model):
     author_id = models.AutoField(primary_key=True)
     name = models.TextField()
     number_of_books = models.SmallIntegerField(default=0)
-    bio = models.TextField(null=True, blank=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    data_quality = models.CharField(max_length=20, choices=[
-        ('complete', 'Complete'),
-        ('partial', 'Partial'),
-        ('minimal', 'Minimal'),
-    ], default='minimal')
-    last_updated = models.DateTimeField(auto_now=True)
+    # bio = models.TextField(null=True, blank=True)
+    # date_of_birth = models.DateField(null=True, blank=True)
+    # data_quality = models.CharField(max_length=20, choices=[
+    #     ('complete', 'Complete'),
+    #     ('partial', 'Partial'),
+    #     ('minimal', 'Minimal'),
+    # ], default='minimal')
+    # last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'author'
         indexes = [
             models.Index(fields=['name'], name='author_name_idx'),
-            models.Index(fields=['date_of_birth'], name='author_birth_date_idx'),
         ]
 
     def __str__(self):
@@ -48,6 +47,7 @@ class Book(models.Model):
     )
     authors = models.ManyToManyField('books.Author', related_name='books', through='BookAuthor')
     genres = models.ManyToManyField('books.Genre', related_name='books')
+    language = models.TextField(null=True, blank=True, help_text="Comma-separated list of languages")
     
     # Add search vector field for full-text search
     search_vector = SearchVectorField(null=True)
@@ -59,13 +59,14 @@ class Book(models.Model):
         max_length=20,
         choices=[
             ('database', 'Database'),
-            ('external', 'External API'),
+            ('openlibrary', 'OpenLibrary'),
+            ('googlebooks', 'Google Books'),
             ('user', 'User Added')
         ],
         default='database'
     )
-    external_id = models.CharField(max_length=100, null=True, blank=True)
-    external_source = models.CharField(max_length=50, null=True, blank=True)
+    # external_id = models.CharField(max_length=100, null=True, blank=True)
+    # external_source = models.CharField(max_length=50, null=True, blank=True)
     
     class Meta:
         db_table = "book"
@@ -85,7 +86,8 @@ class Book(models.Model):
             # New indexes for tracking
             models.Index(fields=['last_updated'], name='book_last_updated_idx'),
             models.Index(fields=['source'], name='book_source_idx'),
-            models.Index(fields=['external_source'], name='book_external_source_idx'),
+            # Language index
+            models.Index(fields=['language'], name='book_language_idx'),
         ]
         ordering = ['-average_rate', 'title']
     

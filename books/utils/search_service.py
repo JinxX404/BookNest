@@ -1,12 +1,12 @@
 from typing import List, Dict, Any, Optional, Tuple
 from django.db import models
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.core.cache import cache
 from django.conf import settings
 from django.db.models import Q
 from books.models import Book, Author, Genre
-from books.utils.external_api_clients import OpenLibraryClient, GoogleBooksClient, search_external_apis
+from books.utils.external_api_clients import OpenLibraryClient, GoogleBooksClient, search_external_apis , merge_book_results
 from books.utils.book_service import save_external_book
 import logging
 import asyncio
@@ -63,27 +63,20 @@ class PostgreSQLSearchService:
         """
         logger.info(f"Starting book search for query: {query}, page: {page}, page_size: {page_size}")
         
-        # if not query.strip():
-        #     logger.info("Empty query, returning all books")
-        #     return PostgreSQLSearchService._get_all_books(page, page_size, filters)
-        
-        # # Update recent searches
-        # PostgreSQLSearchService._update_recent_searches(query)
-        
-        # # Try to get from cache first
-        # cache_key = PostgreSQLSearchService._generate_cache_key(query, page, page_size, filters)
-        # cached_result = cache.get(cache_key)
-        # if cached_result:
-        #     logger.info(f"Cache hit for query: {query}")
-        #     return cached_result
+        # Validate pagination parameters
+        try:
+            page = max(1, int(page))  # Ensure page is at least 1
+            page_size = max(1, min(int(page_size), 100))  # Ensure page_size is between 1 and 100
+        except (ValueError, TypeError):
+            logger.warning("Invalid pagination parameters, using defaults")
+            page = 1
+            page_size = 10
         
         # First try local database search
         books, total_count = PostgreSQLSearchService._search_local_database(query, page, page_size, filters)
-        print("local books" , books)
+        logger.info(f"Found {len(books)} books in local database for query: {query}")
+        
         if books:
-            logger.info(f"Found {len(books)} books in local database for query: {query}")
-            # Cache the results
-            # cache.set(cache_key, (books, total_count), settings.CACHE_TTL)
             return books, total_count
         
         logger.info(f"No local results for query: {query}, searching external APIs")
@@ -181,12 +174,14 @@ class PostgreSQLSearchService:
             
             # Apply pagination
             paginator = Paginator(queryset, page_size)
-            page_obj = paginator.get_page(page)
-            
-            # Convert to list of dictionaries
-            books = [PostgreSQLSearchService._book_to_dict(book) for book in page_obj.object_list]
-            
-            return books, total_count
+            try:
+                page_obj = paginator.get_page(page)
+                # Convert to list of dictionaries
+                books = [PostgreSQLSearchService._book_to_dict(book) for book in page_obj.object_list]
+                return books, total_count
+            except EmptyPage:
+                logger.warning(f"Page {page} is out of range, returning empty result")
+                return [], total_count
             
         except Exception as e:
             logger.error(f"Database search error: {e}", exc_info=True)
@@ -206,12 +201,12 @@ class PostgreSQLSearchService:
             
             async def search_all_apis():
                 try:
-                    # Search both APIs concurrently
+                    # Search both APIs concurrently with page_size
                     openlibrary_task = asyncio.create_task(
-                        asyncio.to_thread(OpenLibraryClient.search_books, query)
+                        asyncio.to_thread(OpenLibraryClient.search_books, query, page_size)
                     )
                     googlebooks_task = asyncio.create_task(
-                        asyncio.to_thread(GoogleBooksClient.search_books, query)
+                        asyncio.to_thread(GoogleBooksClient.search_books, query, page_size)
                     )
                     
                     # Wait for both tasks to complete
@@ -219,11 +214,11 @@ class PostgreSQLSearchService:
                         openlibrary_task, googlebooks_task
                     )
                     
-                    # Combine results
-                    all_results = openlibrary_results + googlebooks_results
-                    logger.info(f"Retrieved {len(all_results)} results from external APIs")
+                    # Merge and deduplicate results using merge_book_results
+                    merged_results = merge_book_results(openlibrary_results, googlebooks_results)
+                    logger.info(f"Retrieved and merged {len(merged_results)} results from external APIs")
                     
-                    return all_results
+                    return merged_results
                     
                 except Exception as e:
                     logger.error(f"Error in async external API search: {e}", exc_info=True)
@@ -239,18 +234,22 @@ class PostgreSQLSearchService:
                 with ThreadPoolExecutor(max_workers=4) as executor:
                     executor.map(save_external_book, external_books)
                 
-                # Cache the results
-                cache_key = PostgreSQLSearchService._generate_cache_key(query, page, page_size)
-                cache.set(cache_key, (external_books, len(external_books)), settings.CACHE_TTL)
                 logger.debug("Cached external search results")
             
-            # Apply pagination to external results
-            start = (page - 1) * page_size
-            end = start + page_size
-            paginated_books = external_books[start:end]
+            # Apply pagination to merged results
+            total_count = len(external_books)
+            start_idx = (page - 1) * page_size
+            end_idx = start_idx + page_size
             
+            # Handle out of range pages
+            if start_idx >= total_count:
+                logger.warning(f"Page {page} is out of range for external results")
+                return [], total_count
+            
+            # Get the paginated slice of results
+            paginated_books = external_books[start_idx:end_idx]
             logger.info(f"Returning {len(paginated_books)} paginated results from external APIs")
-            return paginated_books, len(external_books)
+            return paginated_books, total_count
             
         except Exception as e:
             logger.error(f"External API search error: {e}", exc_info=True)
@@ -297,7 +296,7 @@ class PostgreSQLSearchService:
         """
         try:
             if 'genres' in filters:
-                queryset = queryset.filter(genres__genre__in=filters['genres'])
+                queryset = queryset.filter(genres__name__in=filters['genres'])
                 logger.debug(f"Applied genre filter: {filters['genres']}")
             
             # Filter by minimum rating
@@ -350,7 +349,7 @@ class PostgreSQLSearchService:
                 'number_of_pages': book.number_of_pages,
                 'description': book.description,
                 'average_rate': float(book.average_rate) if book.average_rate else None,
-                'genres': [genre.genre for genre in book.genres.all()],
+                'genres': [genre.name for genre in book.genres.all()],
                 'source': book.source,
                 'last_updated': book.last_updated.isoformat() if book.last_updated else None
             }
