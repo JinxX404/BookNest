@@ -4,7 +4,10 @@ from django.conf import settings
 from users.models.profile import Profile
 from books.models import ReadingList
 import logging
+from django.contrib.auth import get_user_model
+from notifications.services import NotificationService
 
+User = get_user_model()
 logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=Profile)
@@ -31,3 +34,13 @@ def create_default_reading_lists(sender, instance, created, **kwargs):
         except Exception as e:
             logger.error(f"Error creating reading lists for user {instance.user.username}: {str(e)}")
             raise 
+        
+@receiver(post_save, sender=User)
+def create_welcome_notification(sender, instance, created, **kwargs):
+
+    """
+    Create a welcome notification when a new user is created.
+    """
+    
+    if created:
+        NotificationService.create_welcome_notification(instance)

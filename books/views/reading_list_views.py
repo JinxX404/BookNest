@@ -1,10 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from users.views.profile import IsOwnerOrReadOnly
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 
 from books.models import ReadingList, Book
 from books.serializers.book_serializers import ReadingListSerializer
@@ -157,3 +158,29 @@ class ReadingListBookOperationsAPIView(APIView):
             {"message": f'This book is not in "{reading_list.name}"'}, 
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+class AdminUserReadingListsAPIView(generics.ListAPIView):
+    """
+    API endpoint that allows admins to view any user's reading lists by user ID.
+    Requires admin privileges.
+    """
+    serializer_class = ReadingListSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        user = get_object_or_404(get_user_model(), id=user_id)
+        return ReadingList.objects.filter(profile__user=user).order_by('-created_at')
+
+
+# class UserReadingListsAPIView(generics.ListAPIView):
+#     """
+#     API endpoint that allows users to view their own reading lists.
+#     Requires authentication.
+#     """
+#     serializer_class = ReadingListSerializer
+#     permission_classes = [IsAuthenticated]
+    
+#     def get_queryset(self):
+#         return ReadingList.objects.filter(profile__user=self.request.user).order_by('-created_at')

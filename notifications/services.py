@@ -131,3 +131,16 @@ class NotificationService:
             read=True,
             timestamp__lt=cutoff_date
         ).delete()[0]
+        
+    @classmethod
+    def create_welcome_notification(cls, user):
+        welcome_type, _ = NotificationType.objects.get_or_create(
+            name='system',
+            defaults={'description': 'Welcome notification for new users'}
+        )  
+        return cls.create_notification(
+            recipient=user,
+            verb='Welcome to BookNest! We\'re excited to have you join our community of readers and authors.',
+            notification_type=welcome_type,
+            data={'welcome_message': True}
+        )

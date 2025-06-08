@@ -321,3 +321,26 @@ class UserRatingsAPIView(generics.ListAPIView):
         # Otherwise, only return public ratings (if you have a public flag) 
         # or all ratings if all are public by default
         return BookRating.objects.filter(user=user).order_by('-created_at')
+    
+
+
+
+
+
+class UserReviewsAPIView(generics.ListAPIView):
+    """
+    API endpoint that allows retrieving all reviews submitted by a specific user.Add commentMore actions
+    Returns all reviews for the specified user, ordered by creation date.
+    """
+    serializer_class = BookReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        
+        try:
+            user = get_user_model().objects.get(id=user_id)
+            return BookReview.objects.filter(user=user).order_by('-created_at')
+        except get_user_model().DoesNotExist:
+            return BookReview.objects.none()  # Return empty queryset if user not found

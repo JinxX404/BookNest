@@ -13,6 +13,7 @@ class BookReviewSerializer(serializers.ModelSerializer):
     user_vote_type = serializers.SerializerMethodField()
     net_votes = serializers.SerializerMethodField()
     profile_pic = serializers.SerializerMethodField()
+    profile_id = serializers.SerializerMethodField()
     
     class Meta:
         model = BookReview
@@ -20,12 +21,12 @@ class BookReviewSerializer(serializers.ModelSerializer):
             'review_id', 'review_text', 'created_at', 'updated_at', 
             'upvotes_count', 'downvotes_count', 'net_votes', 'user', 'book', 
             'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
-            'profile_pic'
+            'profile_pic' , 'profile_id'
         ]
         read_only_fields = [
             'review_id', 'created_at', 'updated_at', 'upvotes_count', 'downvotes_count',
             'net_votes', 'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
-            'profile_pic'
+            'profile_pic', 'profile_id'
         ]
     
     def get_book_title(self, obj):
@@ -75,6 +76,13 @@ class BookReviewSerializer(serializers.ModelSerializer):
                 review=obj
             ).first()
             return vote.vote_type if vote else None
+        return None
+    
+    
+    def get_profile_id(self, obj):
+        """Get the user's profile ID"""
+        if hasattr(obj.user, 'profile'):
+            return obj.user.profile.id
         return None
     
     def to_representation(self, instance):

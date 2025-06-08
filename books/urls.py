@@ -32,7 +32,8 @@ from books.views.review_views import (
     BookRatingDeleteAPIView,
     BookRatingsByBookAPIView,
     UserBookRatingAPIView,
-    UserRatingsAPIView
+    UserRatingsAPIView, 
+    UserReviewsAPIView
 )
 
 from books.views.upvote_views import (
@@ -62,6 +63,7 @@ from books.views.reading_list_views import (
     ReadingListUpdateAPIView,
     ReadingListDeleteAPIView,
     ReadingListBookOperationsAPIView,
+    AdminUserReadingListsAPIView,
 )
 
 
@@ -125,6 +127,7 @@ urlpatterns = [
     path("books/<str:book_id>/ratings/", BookRatingsByBookAPIView.as_view(), name="api-book-ratings"),
     path("books/<str:book_id>/my-rating/", UserBookRatingAPIView.as_view(), name="api-user-book-rating"),
     path('users/<str:user_id>/ratings/', UserRatingsAPIView.as_view(), name='user-ratings'),
+    path('users/<int:user_id>/reviews/', UserReviewsAPIView.as_view(), name='user-reviews'),
     
     # Reading List API endpoints
     path("reading-lists/", ReadingListAPIView.as_view(), name="reading-lists-api"),
@@ -133,4 +136,6 @@ urlpatterns = [
     path("reading-lists/<int:list_id>/update/", ReadingListUpdateAPIView.as_view(), name="reading-list-update-api"),
     path("reading-lists/<int:list_id>/delete/", ReadingListDeleteAPIView.as_view(), name="reading-list-delete-api"),
     path("reading-lists/books/", ReadingListBookOperationsAPIView.as_view(), name="reading-list-books-api"),
+    path("users/<int:user_id>/reading-lists/", AdminUserReadingListsAPIView.as_view(), name="admin-user-reading-lists-api"),
+    # path("users/me/reading-lists/", UserReadingListsAPIView.as_view(), name="user-reading-lists-api"),
 ]
