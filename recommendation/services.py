@@ -174,7 +174,7 @@ class RecommendationService:
         
         # Get users with sufficient ratings
         users_with_ratings = BookRating.objects.values('user').annotate(
-            rating_count=Count('id')
+            rating_count=Count('rate_id')
         ).filter(rating_count__gte=min_ratings)
         
         user_ids = [user['user'] for user in users_with_ratings]

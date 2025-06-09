@@ -81,7 +81,7 @@ def save_external_book(book_data: Dict[str, Any]) -> Optional[Book]:
             cover_img=book_data.get('cover_img'),
             description=book_data.get('description', '').strip(),  # Clean description
             number_of_pages=book_data.get('number_of_pages'),
-            average_rate=book_data.get('average_rating'),  # Use average_rating from API
+            average_rate=0,  # Use average_rating from API
             publication_date=parse_date(book_data.get('publication_date')),
             source=book_data.get('source', 'openlibrary'),  # Use the source from the API
             language=book_data.get('language')  # Add language field

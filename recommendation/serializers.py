@@ -19,7 +19,7 @@ class UserRecommendationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserRecommendation
-        fields = ['id', 'book_title', 'book_author', 'book_cover', 'recommended_at']
+        fields = ['id','book', 'book_title', 'book_author', 'book_cover', 'recommended_at']
         read_only_fields = ['id', 'recommended_at']
         
     def get_book_cover(self, obj):

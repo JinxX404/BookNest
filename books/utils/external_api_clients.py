@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Optional
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from django.conf import settings
+from concurrent.futures import ThreadPoolExecutor
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -83,7 +84,7 @@ class OpenLibraryClient:
         """Search for books using OpenLibrary API
         
         Args:
-            query: Search query string
+            query: Search query string (can be ISBN-13, title, or author)
             page_size: Number of results to return (default: 15)
             
         Returns:
@@ -96,15 +97,30 @@ class OpenLibraryClient:
         try:
             # Use session with retry logic and timeout
             session = get_requests_session()
-            response = session.get(
-                cls.SEARCH_URL,
-                params={
-                    "q": query,
-                    "limit": page_size,
-                    "fields": ",".join(cls.FIELDS)
-                },
-                timeout=(5, 10)
-            )
+            
+            # If query looks like an ISBN-13, search specifically for it
+            isbn13 = clean_isbn(query)
+            if isbn13 and len(isbn13) == 13:
+                response = session.get(
+                    cls.SEARCH_URL,
+                    params={
+                        "q": f"isbn:{isbn13}",
+                        "limit": page_size,
+                        "fields": ",".join(cls.FIELDS)
+                    },
+                    timeout=(5, 10)
+                )
+            else:
+                response = session.get(
+                    cls.SEARCH_URL,
+                    params={
+                        "q": query,
+                        "limit": page_size,
+                        "fields": ",".join(cls.FIELDS)
+                    },
+                    timeout=(5, 10)
+                )
+            
             response.raise_for_status()
             data = response.json()
             
@@ -167,7 +183,7 @@ class GoogleBooksClient:
         """Search for books using Google Books API
         
         Args:
-            query: Search query string
+            query: Search query string (can be ISBN-13, title, or author)
             page_size: Number of results to return (default: 15)
             
         Returns:
@@ -180,15 +196,30 @@ class GoogleBooksClient:
         try:
             # Use session with retry logic and timeout
             session = get_requests_session()
-            response = session.get(
-                cls.BASE_URL,
-                params={
-                    "q": query,
-                    "maxResults": min(page_size, cls.MAX_RESULTS),
-                    "fields": cls.FIELDS
-                },
-                timeout=(5, 10)
-            )
+            
+            # If query looks like an ISBN-13, search specifically for it
+            isbn13 = clean_isbn(query)
+            if isbn13 and len(isbn13) == 13:
+                response = session.get(
+                    cls.BASE_URL,
+                    params={
+                        "q": f"isbn:{isbn13}",
+                        "maxResults": min(page_size, cls.MAX_RESULTS),
+                        "fields": cls.FIELDS
+                    },
+                    timeout=(5, 10)
+                )
+            else:
+                response = session.get(
+                    cls.BASE_URL,
+                    params={
+                        "q": query,
+                        "maxResults": min(page_size, cls.MAX_RESULTS),
+                        "fields": cls.FIELDS
+                    },
+                    timeout=(5, 10)
+                )
+            
             response.raise_for_status()
             data = response.json()
             
@@ -231,7 +262,6 @@ class GoogleBooksClient:
                     "language": language_str,
                     "average_rating": volume_info.get("averageRating")
                 }
-            if book["isbn13"]:
                 books.append(book)
             
             return books
