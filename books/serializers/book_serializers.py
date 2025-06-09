@@ -94,6 +94,8 @@ class ReadingListSerializer(serializers.ModelSerializer):
     book_count = serializers.SerializerMethodField()
     owner_username = serializers.SerializerMethodField()
     books=BookSerializer(many=True, read_only=True)
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    
     class Meta:
         model = ReadingList
         fields = ["list_id", "name", "type", "privacy", "created_at", "book_count", "owner_username", "books"]

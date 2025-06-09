@@ -4,8 +4,8 @@ from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
 from cloudinary.models import CloudinaryField
 
-DEFAULT_PROFILE_PIC = 'https://sbmsdpqk.manus.space/image.svg'
-
+DEFAULT_PROFILE_PIC = 'https://liwdokry.manus.space/image.svg'
+DEFAULT_BIO = "Hey there! I'm new to BookNest."
 def validate_image_size(value):
     """Validator to ensure uploaded files aren't too large"""
     filesize = value.size
@@ -35,7 +35,7 @@ class Profile(models.Model):
         null=True,
         default=DEFAULT_PROFILE_PIC
     )
-    bio = models.TextField(max_length=500, blank=True)
+    bio = models.TextField(max_length=500, blank=True, default=DEFAULT_BIO)
     profile_type = models.CharField(max_length=20, choices=PROFILE_TYPES, default='REGULAR')
     settings = models.JSONField(default=dict)  # Storing settings as JSON
     created_at = models.DateTimeField(auto_now_add=True)

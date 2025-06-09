@@ -14,6 +14,9 @@ class BookReviewSerializer(serializers.ModelSerializer):
     net_votes = serializers.SerializerMethodField()
     profile_pic = serializers.SerializerMethodField()
     profile_id = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    book_cover = serializers.SerializerMethodField()
     
     class Meta:
         model = BookReview
@@ -21,12 +24,12 @@ class BookReviewSerializer(serializers.ModelSerializer):
             'review_id', 'review_text', 'created_at', 'updated_at', 
             'upvotes_count', 'downvotes_count', 'net_votes', 'user', 'book', 
             'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
-            'profile_pic' , 'profile_id'
+            'profile_pic', 'profile_id', 'book_cover'
         ]
         read_only_fields = [
             'review_id', 'created_at', 'updated_at', 'upvotes_count', 'downvotes_count',
             'net_votes', 'username', 'book_title', 'has_upvoted', 'has_downvoted', 'user_vote_type',
-            'profile_pic', 'profile_id'
+            'profile_pic', 'profile_id', 'book_cover'
         ]
     
     def get_book_title(self, obj):
@@ -78,12 +81,15 @@ class BookReviewSerializer(serializers.ModelSerializer):
             return vote.vote_type if vote else None
         return None
     
-    
     def get_profile_id(self, obj):
         """Get the user's profile ID"""
         if hasattr(obj.user, 'profile'):
             return obj.user.profile.id
         return None
+
+    def get_book_cover(self, obj):
+        """Get the book's cover image URL"""
+        return obj.book.cover_img if obj.book else None
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -97,6 +103,8 @@ class ReviewVoteSerializer(serializers.ModelSerializer):
     """Serializer for review votes (upvotes and downvotes)"""
     username = serializers.SerializerMethodField()
     review_text_preview = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = ReviewVote
@@ -135,6 +143,7 @@ class ReviewUpvoteSerializer(serializers.ModelSerializer):
     """Serializer for review upvotes (backward compatibility)"""
     username = serializers.SerializerMethodField()
     review_text_preview = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = ReviewUpvote
@@ -162,6 +171,7 @@ class BookRatingSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     book_title = serializers.SerializerMethodField()
     book_average_rate = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = BookRating

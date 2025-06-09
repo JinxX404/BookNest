@@ -21,6 +21,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     target_name = serializers.SerializerMethodField()
     action_object_name = serializers.SerializerMethodField()
     notification_type_name = serializers.SerializerMethodField()
+    timestamp = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = Notification

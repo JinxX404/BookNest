@@ -61,6 +61,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
     books_count = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_type_display', read_only=True)
     privacy_display = serializers.CharField(source='get_privacy_display', read_only=True)
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = ReadingList
@@ -75,6 +76,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
 
 class BookRatingSerializer(serializers.ModelSerializer):
     book = BookBasicSerializer(read_only=True)
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = BookRating
@@ -83,15 +85,22 @@ class BookRatingSerializer(serializers.ModelSerializer):
 
 class BookReviewSerializer(serializers.ModelSerializer):
     book = BookBasicSerializer(read_only=True)
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    book_cover = serializers.SerializerMethodField()
     
     class Meta:
         model = BookReview
-        fields = ['review_id', 'review_text', 'created_at', 'book']
+        fields = ['review_id', 'review_text', 'created_at', 'book', 'book_cover']
+    
+    def get_book_cover(self, obj):
+        """Get the book's cover image URL"""
+        return obj.book.cover_img if obj.book else None
 
 
 class FollowingSerializer(serializers.ModelSerializer):
     followed_user = serializers.SerializerMethodField()
     followed_profile_pic = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = Follow
@@ -114,6 +123,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 class FollowerSerializer(serializers.ModelSerializer):
     follower_user = serializers.SerializerMethodField()
     follower_profile_pic = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = Follow
@@ -141,6 +151,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     followers = FollowerSerializer(many=True, read_only=True)
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
     
     class Meta:
         model = Profile
