@@ -42,8 +42,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     profile_pic = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
-    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
 
     class Meta:

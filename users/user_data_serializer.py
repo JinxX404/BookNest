@@ -61,7 +61,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
     books_count = serializers.SerializerMethodField()
     type_display = serializers.CharField(source='get_type_display', read_only=True)
     privacy_display = serializers.CharField(source='get_privacy_display', read_only=True)
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = ReadingList
@@ -69,6 +69,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
             'list_id', 'name', 'type', 'type_display', 'privacy', 
             'privacy_display', 'created_at', 'books_count', 'books_detail'
         ]
+        read_only_fields = ['list_id', 'created_at']
     
     def get_books_count(self, obj):
         return obj.reading_list_books.count()
@@ -76,21 +77,23 @@ class ReadingListSerializer(serializers.ModelSerializer):
 
 class BookRatingSerializer(serializers.ModelSerializer):
     book = BookBasicSerializer(read_only=True)
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = BookRating
         fields = ['rate_id', 'rate', 'created_at', 'book']
+        read_only_fields = ['rate_id', 'created_at']
 
 
 class BookReviewSerializer(serializers.ModelSerializer):
     book = BookBasicSerializer(read_only=True)
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     book_cover = serializers.SerializerMethodField()
     
     class Meta:
         model = BookReview
         fields = ['review_id', 'review_text', 'created_at', 'book', 'book_cover']
+        read_only_fields = ['review_id', 'created_at']
     
     def get_book_cover(self, obj):
         """Get the book's cover image URL"""
@@ -100,11 +103,12 @@ class BookReviewSerializer(serializers.ModelSerializer):
 class FollowingSerializer(serializers.ModelSerializer):
     followed_user = serializers.SerializerMethodField()
     followed_profile_pic = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = Follow
         fields = ['followed_user', 'followed_profile_pic', 'created_at']
+        read_only_fields = ['followed_user', 'followed_profile_pic', 'created_at']
     
     def get_followed_user(self, obj):
         return {
@@ -123,11 +127,12 @@ class FollowingSerializer(serializers.ModelSerializer):
 class FollowerSerializer(serializers.ModelSerializer):
     follower_user = serializers.SerializerMethodField()
     follower_profile_pic = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = Follow
         fields = ['follower_user', 'follower_profile_pic', 'created_at']
+        read_only_fields = ['follower_user', 'follower_profile_pic', 'created_at']
     
     def get_follower_user(self, obj):
         return {
@@ -151,8 +156,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     followers = FollowerSerializer(many=True, read_only=True)
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
-    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = Profile
@@ -162,6 +167,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'social_links', 'following', 'followers', 'following_count',
             'followers_count'
         ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
     
     def get_following_count(self, obj):
         return obj.following.count()

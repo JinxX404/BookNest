@@ -14,8 +14,8 @@ class BookReviewSerializer(serializers.ModelSerializer):
     net_votes = serializers.SerializerMethodField()
     profile_pic = serializers.SerializerMethodField()
     profile_id = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
-    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     book_cover = serializers.SerializerMethodField()
     
     class Meta:
@@ -103,8 +103,8 @@ class ReviewVoteSerializer(serializers.ModelSerializer):
     """Serializer for review votes (upvotes and downvotes)"""
     username = serializers.SerializerMethodField()
     review_text_preview = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
-    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
+    updated_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = ReviewVote
@@ -143,7 +143,7 @@ class ReviewUpvoteSerializer(serializers.ModelSerializer):
     """Serializer for review upvotes (backward compatibility)"""
     username = serializers.SerializerMethodField()
     review_text_preview = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = ReviewUpvote
@@ -171,7 +171,7 @@ class BookRatingSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     book_title = serializers.SerializerMethodField()
     book_average_rate = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p')
+    created_at = serializers.DateTimeField(format='%a %b %d %Y at %I:%M %p', read_only=True)
     
     class Meta:
         model = BookRating
