@@ -224,7 +224,7 @@ class RelatedBookSuggestionAPIView(APIView):
             
             # Add genre filter if we have genres
             if genres:
-                query |= Q(genres__genre__in=genres)
+                query |= Q(genres__name__in=genres)
             
             # Exclude the reference book itself
             query &= ~Q(isbn13=reference_book.isbn13)

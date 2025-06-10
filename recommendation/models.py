@@ -3,9 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 from books.models import Book
 class RecommendationModel(models.Model):
-    """
-    Model to store trained recommendation models and their metadata
-    """
+    
     MODEL_TYPES = (
         ('svd', 'Singular Value Decomposition'),
         ('knn', 'K-Nearest Neighbors'),
@@ -36,9 +34,7 @@ class RecommendationModel(models.Model):
 
 
 class UserRecommendation(models.Model):
-    """
-    Model to store precomputed book recommendations for users
-    """
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='book_recommendation')
     book = models.ForeignKey(Book, on_delete=models.CASCADE)  # Assuming Book model exists in 'books' app
     score = models.FloatField(help_text="Predicted rating or recommendation score")

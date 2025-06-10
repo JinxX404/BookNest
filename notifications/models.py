@@ -4,10 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 class NotificationType(models.Model):
-    """
-    Model to define different types of notifications.
-    This allows for easy extension of notification types.
-    """
+
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     
@@ -15,10 +12,7 @@ class NotificationType(models.Model):
         return self.name
 
 class Notification(models.Model):
-    """
-    Generic notification model that can be linked to any object.
-    Uses the ContentType framework to enable generic relations.
-    """
+
     # Who the notification is for
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL, 

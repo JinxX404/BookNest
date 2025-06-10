@@ -21,7 +21,6 @@ class Profile(models.Model):
         ('AUTHOR', 'Author'),
         ('PUBLISHER', 'Publisher'),
     ]
-
     # One-to-one relationship with User model
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE, related_name='profile')
     profile_pic = CloudinaryField(

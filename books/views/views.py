@@ -129,7 +129,7 @@ class AuthorBookListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'authors__name': ['icontains' , 'in'],
-        'genres__genre': ['icontains', 'in', 'exact'],
+        'genres__name': ['icontains', 'in', 'exact'],
         'average_rate': ['gte', 'lte'],
         'description': ['icontains'],
         'publication_date': ['exact', 'year', 'month', 'day', 'range'],

@@ -14,21 +14,11 @@ class Author(models.Model):
     author_id = models.AutoField(primary_key=True)
     name = models.TextField()
     number_of_books = models.SmallIntegerField(default=0)
-    # bio = models.TextField(null=True, blank=True)
-    # date_of_birth = models.DateField(null=True, blank=True)
-    # data_quality = models.CharField(max_length=20, choices=[
-    #     ('complete', 'Complete'),
-    #     ('partial', 'Partial'),
-    #     ('minimal', 'Minimal'),
-    # ], default='minimal')
-    # last_updated = models.DateTimeField(auto_now=True)
-
     class Meta:
         db_table = 'author'
         indexes = [
             models.Index(fields=['name'], name='author_name_idx'),
         ]
-
     def __str__(self):
         return self.name
 
@@ -48,11 +38,7 @@ class Book(models.Model):
     authors = models.ManyToManyField('books.Author', related_name='books', through='BookAuthor')
     genres = models.ManyToManyField('books.Genre', related_name='books')
     language = models.TextField(null=True, blank=True, help_text="Comma-separated list of languages")
-    
-    # Add search vector field for full-text search
     search_vector = SearchVectorField(null=True)
-    
-    # Add tracking fields
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     source = models.CharField(
@@ -65,9 +51,6 @@ class Book(models.Model):
         ],
         default='database'
     )
-    # external_id = models.CharField(max_length=100, null=True, blank=True)
-    # external_source = models.CharField(max_length=50, null=True, blank=True)
-    
     class Meta:
         db_table = "book"
         indexes = [
@@ -90,7 +73,6 @@ class Book(models.Model):
             models.Index(fields=['language'], name='book_language_idx'),
         ]
         ordering = ['-average_rate', 'title']
-    
     def __str__(self):
         return self.title
 
@@ -191,24 +173,19 @@ class BookAuthor(models.Model):
 
 class ReadingList(models.Model):
 
-  
     LIST_PRIVACY = (
         ('public', 'Public'),
         ('private', 'Private'),
     )
-
     LIST_TYPES = (
         ('todo', 'To Do'),
         ('doing', 'Doing'),
         ('done', 'Done'),
         ('custom', 'Custom'),
     )
-
     list_id = models.AutoField(primary_key=True)
     name = models.TextField()
-
     books = models.ManyToManyField('books.Book', through='ReadingListBooks')
-
     type = models.CharField(
         max_length=10,
         choices=LIST_TYPES,
@@ -224,10 +201,8 @@ class ReadingList(models.Model):
         on_delete=models.CASCADE,
         related_name='reading_lists'
     )
-
     class Meta:
         db_table = 'Reading_List'
-
     def __str__(self):
         return self.name
 
@@ -306,7 +281,6 @@ class BookReview(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews'
     )
-
     class Meta:
         db_table = 'Book_Review'
         ordering = ['-created_at']
@@ -315,7 +289,6 @@ class BookReview(models.Model):
             models.Index(fields=['-created_at'], name='review_created_idx'),
             models.Index(fields=['book', '-upvotes_count'], name='book_review_upvotes_idx'),
         ]
-
     def __str__(self):
         return f'{self.user.username} review for {self.book.title}'
     
